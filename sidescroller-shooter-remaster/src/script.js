@@ -3,6 +3,8 @@ const ctx = canvas.getContext('2d');
 
 const shootingSoundSrc = './Sounds/shoot_sound.mp3';
 
+let devMode = false; // Toggle with 'devmode' cheat code
+
 function preloadSound(src) {
     const sound = new Audio(src);
     sound.load();
@@ -14,110 +16,110 @@ preloadSound(shootingSoundSrc);
 const enemySpriteSheet = new Image();
 enemySpriteSheet.src = './graphics/enemy.png';
 enemySpriteSheet.onload = () => {
-    console.log('Enemy sprite sheet loaded');
+    if (devMode) console.log('Enemy sprite sheet loaded');
     startGame();  // Initialize the game after the image is loaded
 };
 enemySpriteSheet.onerror = () => {
-    console.error('Error loading enemy sprite sheet');
+    if (devMode) console.error('Error loading enemy sprite sheet');
 };
 
 const backgroundImage = new Image();
 backgroundImage.src = './graphics/bg.png';
 backgroundImage.onload = () => {
-    console.log('Background image loaded');
+    if (devMode) console.log('Background image loaded');
 };
 backgroundImage.onerror = () => {
-    console.error('Error loading background image');
+    if (devMode) console.error('Error loading background image');
 };
 
 const restaurantScreenImg = new Image();
 restaurantScreenImg.src = './graphics/reastaurant_screen.png';
 restaurantScreenImg.onload = () => {
-    console.log('Restaurant screen image loaded');
+    if (devMode) console.log('Restaurant screen image loaded');
 };
 restaurantScreenImg.onerror = () => {
-    console.error('Error loading restaurant screen image');
+    if (devMode) console.error('Error loading restaurant screen image');
 };
 
 const robberyScreenImg = new Image();
 robberyScreenImg.src = './graphics/robbery_screen.png';
 robberyScreenImg.onload = () => {
-    console.log('Robbery screen image loaded');
+    if (devMode) console.log('Robbery screen image loaded');
 };
 robberyScreenImg.onerror = () => {
-    console.error('Error loading robbery screen image');
+    if (devMode) console.error('Error loading robbery screen image');
 };
 
 const robberySuccessImg = new Image();
 robberySuccessImg.src = './graphics/robbery_screen_succes.png';
 robberySuccessImg.onload = () => {
-    console.log('Robbery success image loaded');
+    if (devMode) console.log('Robbery success image loaded');
 };
 robberySuccessImg.onerror = () => {
-    console.error('Error loading robbery success image');
+    if (devMode) console.error('Error loading robbery success image');
 };
 
 const robberyFailureImg = new Image();
 robberyFailureImg.src = './graphics/robbery_screen_failed.png';
 robberyFailureImg.onload = () => {
-    console.log('Robbery failure image loaded');
+    if (devMode) console.log('Robbery failure image loaded');
 };
 robberyFailureImg.onerror = () => {
-    console.error('Error loading robbery failure image');
+    if (devMode) console.error('Error loading robbery failure image');
 };
 
 const storeImg = new Image();
 storeImg.src = './graphics/store_screen.png';
 storeImg.onload = () => {
-    console.log('Store screen image loaded');
+    if (devMode) console.log('Store screen image loaded');
 };
 storeImg.onerror = () => {
-    console.error('Error loading store screen image');
+    if (devMode) console.error('Error loading store screen image');
 };
 
 const hudImage = new Image();
 hudImage.src = './graphics/hud.png';
 hudImage.onload = () => {
-    console.log('HUD image loaded');
+    if (devMode) console.log('HUD image loaded');
 };
 hudImage.onerror = () => {
-    console.error('Error loading HUD image');
+    if (devMode) console.error('Error loading HUD image');
 };
 
 const mainMenuImage = new Image();
 mainMenuImage.src = './graphics/mainmenu.png';
 mainMenuImage.onload = () => {
-    console.log('Main menu image loaded');
+    if (devMode) console.log('Main menu image loaded');
 };
 mainMenuImage.onerror = () => {
-    console.error('Error loading main menu image');
+    if (devMode) console.error('Error loading main menu image');
 };
 
 const arrowImage = new Image();
 arrowImage.src = './graphics/mark.png';
 arrowImage.onload = () => {
-    console.log('Arrow image loaded');
+    if (devMode) console.log('Arrow image loaded');
 };
 arrowImage.onerror = () => {
-    console.error('Error loading arrow image');
+    if (devMode) console.error('Error loading arrow image');
 };
 
 const controlsImage = new Image();
 controlsImage.src = './graphics/how.png';
 controlsImage.onload = () => {
-    console.log('Controls image loaded');
+    if (devMode) console.log('Controls image loaded');
 };
 controlsImage.onerror = () => {
-    console.error('Error loading controls image');
+    if (devMode) console.error('Error loading controls image');
 };
 
 const playerSprite = new Image();
 playerSprite.src = './graphics/player.png';
 playerSprite.onload = () => {
-    console.log('Player sprite loaded');
+    if (devMode) console.log('Player sprite loaded');
 };
 playerSprite.onerror = () => {
-    console.error('Error loading player sprite');
+    if (devMode) console.error('Error loading player sprite');
 };
 
 let enemies = [];
@@ -158,10 +160,10 @@ for (const [name, src] of Object.entries(imageSources)) {
     images[name].src = src;
     images[name].onload = () => {
         imagesLoaded++;
-        console.log(`${name} image loaded`);
+        if (devMode) console.log(`${name} image loaded`);
     };
     images[name].onerror = () => {
-        console.error(`Error loading ${name} image`);
+        if (devMode) console.error(`Error loading ${name} image`);
     };
 }
 
@@ -171,11 +173,11 @@ function allImagesLoaded() {
 
 function initializeGame() {
     if (!enemySpriteSheet.complete) {
-        console.log('Waiting for enemy sprite sheet to load...');
+        if (devMode) console.log('Waiting for enemy sprite sheet to load...');
         setTimeout(initializeGame, 100);
         return;
     }
-    console.log('All images loaded. Starting game...');
+    if (devMode) console.log('All images loaded. Starting game...');
     startGame();
 }
 
@@ -409,7 +411,7 @@ function updateEnemyPositions(enemies, player) {
         moveTowardPlayer(enemy);
 
         if (isNaN(enemy.x) || isNaN(enemy.y)) {
-            console.error('Invalid position values:', enemy.x, enemy.y);
+            if (devMode) console.error('Invalid position values:', enemy.x, enemy.y);
         }
     });
 }
@@ -417,10 +419,10 @@ function updateEnemyPositions(enemies, player) {
 function checkLevelProgression() {
     if (enemies.length === 0 && enemiesCleared && !progressionChecked) {
         playerCurrency += 100; 
-        console.log(`Level cleared! Player currency: ${playerCurrency}`);
+        if (devMode) console.log(`Level cleared! Player currency: ${playerCurrency}`);
 
         const randomNumber = Math.floor(Math.random() * 100) + 1;
-        console.log(`Generated Random Number: ${randomNumber}`);
+        if (devMode) console.log(`Generated Random Number: ${randomNumber}`);
 
         if (randomNumber >= 1 && randomNumber <= 33) {
             selectedEstablishment = ESTABLISHMENTS.STORE;
@@ -429,7 +431,7 @@ function checkLevelProgression() {
         } else if (randomNumber >= 67 && randomNumber <= 100) {
             selectedEstablishment = ESTABLISHMENTS.ROBBERY;
         }
-        console.log(`Selected Establishment: ${selectedEstablishment}`);
+        if (devMode) console.log(`Selected Establishment: ${selectedEstablishment}`);
 
         progressionChecked = true;
     }
@@ -447,38 +449,38 @@ function checkLevelProgression() {
 
 function enterEstablishment() {
     selectedEstablishment = selectRandomEstablishment();
-    console.log(`Entering establishment: ${selectedEstablishment}`);
+    if (devMode) console.log(`Entering establishment: ${selectedEstablishment}`);
     if (selectedEstablishment === ESTABLISHMENTS.STORE) {
         currentGameState = gameState.STORE_SCREEN;
-        console.log("Entering store screen");
+        if (devMode) console.log("Entering store screen");
     } else if (selectedEstablishment === ESTABLISHMENTS.RESTAURANT) {
         currentGameState = gameState.RESTAURANT_SCREEN;
-        console.log("Entering restaurant screen");
+        if (devMode) console.log("Entering restaurant screen");
     } else if (selectedEstablishment === ESTABLISHMENTS.ROBBERY) {
         currentGameState = gameState.ROBBERY_SCREEN;
-        console.log("Entering robbery screen");
+        if (devMode) console.log("Entering robbery screen");
     } else {
-        console.log("Error: Invalid establishment selected.");
+        if (devMode) console.log("Error: Invalid establishment selected.");
     }
 }
 
 window.addEventListener('keydown', (e) => {
     keys[e.code] = true;
-    console.log(`Key pressed: ${e.code}, Current game state: ${currentGameState}`);
+    if (devMode) console.log(`Key pressed: ${e.code}, Current game state: ${currentGameState}`);
 
     if (currentGameState === gameState.MAIN_MENU) {
         if (e.code === 'Enter') {
-            console.log("Enter key pressed in main menu");
+            if (devMode) console.log("Enter key pressed in main menu");
             currentGameState = gameState.PLAYING;
             enemies = initializeEnemiesForLevel(currentLevel);
-            console.log("Game started, enemies initialized:", enemies);
+            if (devMode) console.log("Game started, enemies initialized:", enemies);
         } else if (e.code === 'KeyQ') {
-            console.log("Q key pressed in main menu");
+            if (devMode) console.log("Q key pressed in main menu");
             currentGameState = gameState.CONTROLS;
         }
     } else if (currentGameState === gameState.CONTROLS) {
         if (e.code === 'Escape') {
-            console.log("Escape key pressed in controls menu");
+            if (devMode) console.log("Escape key pressed in controls menu");
             currentGameState = gameState.MAIN_MENU;
         }
     } else if (currentGameState === gameState.PLAYING) {
@@ -489,7 +491,7 @@ window.addEventListener('keydown', (e) => {
             if (selectedEstablishment) {
                 enterEstablishment();
             } else {
-                console.log("No establishment selected.");
+                if (devMode) console.log("No establishment selected.");
             }
         }
         if (e.code === 'Escape') {
@@ -497,13 +499,13 @@ window.addEventListener('keydown', (e) => {
         }
         if (e.code === 'Digit1') {
             selectedAmmoType = 'standard';
-            console.log('Switched to standard ammo.');
+            if (devMode) console.log('Switched to standard ammo.');
         } else if (e.code === 'Digit2') {
             selectedAmmoType = 'highDamage';
-            console.log('Switched to high damage ammo.');
+            if (devMode) console.log('Switched to high damage ammo.');
         } else if (e.code === 'Digit3') {
             selectedAmmoType = 'penetration';
-            console.log('Switched to penetration ammo.');
+            if (devMode) console.log('Switched to penetration ammo.');
         }
     } else if (currentGameState === gameState.STORE_SCREEN || currentGameState === gameState.ROBBERY_SCREEN) {
         if (e.code === 'KeyB') {
@@ -512,7 +514,7 @@ window.addEventListener('keydown', (e) => {
             handleEstablishmentInput(e.code);
         }
     } else if (currentGameState === gameState.RESTAURANT_SCREEN) {
-        console.log(`Handling restaurant input for key: ${e.code}`);
+        if (devMode) console.log(`Handling restaurant input for key: ${e.code}`);
         if (e.code === 'Digit1') {
             purchaseMeal(meals.RED_FISH);
         } else if (e.code === 'Digit2') {
@@ -528,11 +530,11 @@ window.addEventListener('keydown', (e) => {
         } else if (e.code === 'KeyR') {
             resetGame();
             currentGameState = gameState.PLAYING;
-            console.log("Restarting the game");
+            if (devMode) console.log("Restarting the game");
         } else if (e.code === 'KeyM') {
             resetGame();
             currentGameState = gameState.MAIN_MENU;
-            console.log("Returning to main menu");
+            if (devMode) console.log("Returning to main menu");
         }
     } else if (currentGameState === gameState.ROBBERY_SUCCESS || currentGameState === gameState.ROBBERY_FAILURE) {
         if (e.code === 'Enter') {
@@ -543,7 +545,7 @@ window.addEventListener('keydown', (e) => {
 
 window.addEventListener('keyup', (e) => {
     keys[e.code] = false;
-    console.log(`Key released: ${e.code}, Current game state: ${currentGameState}`);
+    if (devMode) console.log(`Key released: ${e.code}, Current game state: ${currentGameState}`);
 });
 
 function handleEstablishmentInput(keyCode) {
@@ -593,42 +595,41 @@ function processCheatCode(command) {
     switch (command.toLowerCase()) {
         case 'god':
             player.health = Infinity;
-            console.log('God mode activated!');
+            if (devMode) console.log('God mode activated!');
             break;
         case 'infiniteammo':
             bullets.length = Infinity;
-            console.log('Infinite ammo activated!');
+            if (devMode) console.log('Infinite ammo activated!');
             break;
         case 'nextlevel':
-            console.log('Next level cheat code activated!');
+            if (devMode) console.log('Next level cheat code activated!');
             triggerLevelChange();
             break;
         case 'killall':
             enemies = [];
-            console.log('All enemies killed!');
+            if (devMode) console.log('All enemies killed!');
             break;
         case 'fastshoot':
             player.shootCooldown = 2; // Ensure this is set on the player object
-            console.log('Shoot cooldown set to 2!');
+            if (devMode) console.log('Shoot cooldown set to 2!');
             break;
         case 'ammo':
             activateInfiniteAmmoTypes(); // Ensure this function is defined elsewhere in your code
-            console.log('Infinite ammo types activated!');
+            if (devMode) console.log('Infinite ammo types activated!');
             break;
         case 'money':
             addCurrency(1000); // Ensure this function is defined elsewhere in your code
-            console.log('Added 1000 currency!');
+            if (devMode) console.log('Added 1000 currency!');
             break;
         case 'devmode':
             devMode = !devMode;
-            console.log(`Dev mode ${devMode ? 'enabled' : 'disabled'}`);
+            if (devMode) console.log(`Dev mode ${devMode ? 'enabled' : 'disabled'}`);
             break;
         default:
-            console.log('Unknown cheat code!');
+            if (devMode) console.log('Unknown cheat code!');
     }
 }
 
-let devMode = false;
 
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && document.activeElement === cheatConsole) {
@@ -651,21 +652,21 @@ document.addEventListener('keydown', (event) => {
 function activateInfiniteAmmoTypes() {
     ammoInventory.highDamage = Infinity;
     ammoInventory.penetration = Infinity;
-    console.log('Infinite ammo activated for high damage and penetration ammo.');
+    if (devMode) console.log('Infinite ammo activated for high damage and penetration ammo.');
 }
 
 function addCurrency(amount) {
     playerCurrency += amount;
-    console.log(`Added ${amount} currency. Current currency: ${playerCurrency}`);
+    if (devMode) console.log(`Added ${amount} currency. Current currency: ${playerCurrency}`);
 }
 
 function togglePause() {
     if (currentGameState === gameState.PLAYING) {
         currentGameState = gameState.PAUSED;
-        console.log("Game paused");
+        if (devMode) console.log("Game paused");
     } else if (currentGameState === gameState.PAUSED) {
         currentGameState = gameState.PLAYING;
-        console.log("Game resumed");
+        if (devMode) console.log("Game resumed");
     }
 }
 
@@ -713,7 +714,7 @@ function updatePlayer() {
 
     // Check if player reached the right edge and proceed to the next level
     if (enemiesCleared && player.x + playerWidth >= canvas.width) {
-        console.log("Player reached the right edge, proceeding to next level");
+        if (devMode) console.log("Player reached the right edge, proceeding to next level");
         triggerLevelChange();
     }
 
@@ -769,9 +770,9 @@ function purchaseAmmo(type, amount) {
     if (playerCurrency >= totalCost) {
         playerCurrency -= totalCost;
         ammoInventory[type] += amount;
-        console.log(`Purchased ${amount} ${type} ammo for ${totalCost} currency.`);
+        if (devMode) console.log(`Purchased ${amount} ${type} ammo for ${totalCost} currency.`);
     } else {
-        console.log('Not enough currency to purchase ammo.');
+        if (devMode) console.log('Not enough currency to purchase ammo.');
     }
 }
 
@@ -780,9 +781,9 @@ function purchaseItem(itemKey) {
     if (playerCurrency >= item.price) {
         playerCurrency -= item.price;
         item.effect();
-        console.log(`Purchased ${itemKey}. Current currency: ${playerCurrency}`);
+        if (devMode) console.log(`Purchased ${itemKey}. Current currency: ${playerCurrency}`);
     } else {
-        console.log(`Not enough currency to buy ${itemKey}. Current currency: ${playerCurrency}`);
+        if (devMode) console.log(`Not enough currency to buy ${itemKey}. Current currency: ${playerCurrency}`);
     }
 }
 
@@ -906,7 +907,7 @@ function handlePlayerDamage(player, enemies, timestamp) {
             if (timestamp - player.lastDamageTime > player.damageInterval) {
                 player.health -= 10;
                 player.lastDamageTime = timestamp;
-                console.log(`Player hit! Health: ${player.health}`);
+                if (devMode) console.log(`Player hit! Health: ${player.health}`);
             }
         }
     });
@@ -1087,7 +1088,7 @@ function triggerLevelChange(level) {
 
 function purchaseMeal(meal) {
     if (!meal) {
-        console.error('Meal is undefined');
+        if (devMode) console.error('Meal is undefined');
         return;
     }
     if (playerCurrency >= meal.cost) {
@@ -1097,9 +1098,9 @@ function purchaseMeal(meal) {
         } else {
             player.health = Math.min(player.health + meal.heal, player.maxHealth);
         }
-        console.log(`Purchased ${meal.name}. Health: ${player.health}, Currency: ${playerCurrency}`);
+        if (devMode) console.log(`Purchased ${meal.name}. Health: ${player.health}, Currency: ${playerCurrency}`);
     } else {
-        console.log(`Not enough currency to purchase ${meal.name}.`);
+        if (devMode) console.log(`Not enough currency to purchase ${meal.name}.`);
     }
 }
 
@@ -1322,7 +1323,7 @@ function drawLevelInfo() {
 }
 
 function drawMainMenu() {
-    console.log("Drawing main menu");
+    if (devMode) console.log("Drawing main menu");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(mainMenuImage, 0, 0, canvas.width, canvas.height);
 }
@@ -1375,7 +1376,7 @@ function drawRobberyFailureScreen() {
 }
 
 function drawMarkPosition() {
-    console.log('Drawing store position');
+    if (devMode) console.log('Drawing store position');
     ctx.drawImage(arrowImage, MARK_POSITION.x, arrowY, MARK_POSITION.width, MARK_POSITION.height);
 }
 
@@ -1410,7 +1411,7 @@ function drawGameOverScreen() {
 }
 
 function drawControlsScreen() {
-    console.log("Drawing controls screen");
+    if (devMode) console.log("Drawing controls screen");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(controlsImage, 0, 0, canvas.width, canvas.height);
 }
@@ -1457,7 +1458,7 @@ function calculateScalingFactor(y) {
 
 function drawScaledEnemy(enemy) {
     if (!enemy.image || !enemy.image.complete) {
-        console.error('Enemy image is not loaded');
+        if (devMode) console.error('Enemy image is not loaded');
         return;
     }
 
