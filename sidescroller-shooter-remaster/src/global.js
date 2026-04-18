@@ -26,6 +26,18 @@ const gameState = {
 
 let currentGameState = 'mainMenu';
 
+
+// --- Key bindings (remappable via Options > Bindings) ---
+// Values are KeyboardEvent.code strings
+const keyBindings = {
+    up:    'KeyW',
+    down:  'KeyS',
+    left:  'KeyA',
+    right: 'KeyD',
+    shoot: 'Space',
+    pause: 'Escape',
+};
+
 // Tracks where the Options screen should return to (main menu or pause menu)
 let pauseOptionsReturnState = 'mainMenu';
 

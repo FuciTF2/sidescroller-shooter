@@ -90,6 +90,19 @@ function gameLoop(timestamp) {
         drawMainMenu();
 
     } else if (currentGameState === gameState.OPTIONS) {
+        // If options was opened from the pause menu, render the frozen game
+        // world first so the panel overlays it instead of a blank/menu screen
+        if (pauseOptionsReturnState === gameState.PAUSED) {
+            drawBackground();
+            enemies.forEach(enemy => { drawEnemy(enemy); drawEnemyHealthBar(enemy); });
+            ctx.drawImage(images.hud, 0, 120);
+            drawPlayer();
+            drawBullets();
+            drawPlayerHealth();
+            drawLevelInfo();
+            drawAmmoType();
+            drawCurrency();
+        }
         drawOptionsScreen();
 
     } else if (currentGameState === gameState.CONTROLS) {

@@ -7,8 +7,8 @@
 const PAUSE_BTN_W   = 260;
 const PAUSE_BTN_H   = 60;
 const PAUSE_BTN_GAP = 18;
-const PAUSE_PANEL_W = 340;
-const PAUSE_PANEL_H = 320;
+const PAUSE_PANEL_W = 420;
+const PAUSE_PANEL_H = 400;
 
 let pauseHoveredButton = null;
 

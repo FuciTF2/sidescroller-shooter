@@ -1,5 +1,5 @@
 // ============================================================
-// mainmenu.js — Main menu + Options screen
+// mainmenu.js — Main menu + Options screen (Audio & Bindings tabs)
 // Depends on: globals.js, assets.js
 // ============================================================
 
@@ -7,26 +7,48 @@
 const MENU_BTN_W       = 240;
 const MENU_BTN_H       = 60;
 const MENU_BTN_GAP     = 20;
-const MENU_PANEL_W     = 340;  // full width of the left panel
+const MENU_PANEL_W     = 340;
 
-// Derived: horizontal centre of the panel
 function menuPanelCX() { return MENU_PANEL_W / 2; }
-// Derived: left x so buttons are centred in the panel
 function menuBtnX()    { return menuPanelCX() - MENU_BTN_W / 2; }
 
-// --- Volume (0.0 – 1.0) ---
+// --- Volume ---
 let masterVolume = 0.8;
+
+// --- Options tab: 'audio' | 'bindings' ---
+let optionsTab = 'audio';
+
+// --- Binding capture state ---
+// When non-null, we're waiting for the next keypress to rebind this action
+let listeningForBinding = null;
 
 // --- Hover / drag state ---
 let menuHoveredElement = null;
 let sliderDragging     = false;
+
+// Human-readable labels for each binding action
+const BINDING_LABELS = {
+    up:    'Move Up',
+    down:  'Move Down',
+    left:  'Move Left',
+    right: 'Move Right',
+    shoot: 'Shoot',
+    pause: 'Pause',
+};
+
+// Pretty-print a KeyboardEvent.code string  e.g. 'KeyW' → 'W', 'Space' → 'Space'
+function prettyKey(code) {
+    if (code.startsWith('Key'))   return code.slice(3);
+    if (code.startsWith('Digit')) return code.slice(5);
+    if (code.startsWith('Arrow')) return code.slice(5);
+    return code;
+}
 
 // =============================================================
 //  LAYOUT HELPERS
 // =============================================================
 
 function getMainMenuButtons() {
-    // Total block = title (36px) + gap (28px) + 3 buttons + 2 gaps between them
     const titleH   = 36;
     const titleGap = 32;
     const blockH   = titleH + titleGap + 3 * MENU_BTN_H + 2 * MENU_BTN_GAP;
@@ -34,22 +56,51 @@ function getMainMenuButtons() {
     const btnX     = menuBtnX();
     const btnStart = blockTop + titleH + titleGap;
     return {
-        _titleY:  blockTop + titleH / 2,   // vertical midpoint of title text
+        _titleY:  blockTop + titleH / 2,
         endless: { label: 'Endless', x: btnX, y: btnStart,                                    w: MENU_BTN_W, h: MENU_BTN_H },
         story:   { label: 'Story',   x: btnX, y: btnStart + (MENU_BTN_H + MENU_BTN_GAP),     w: MENU_BTN_W, h: MENU_BTN_H },
         options: { label: 'Options', x: btnX, y: btnStart + (MENU_BTN_H + MENU_BTN_GAP) * 2, w: MENU_BTN_W, h: MENU_BTN_H },
     };
 }
 
-function getOptionsButtons() {
+function getOptionsBackButton() {
+    return { label: '← Back', x: menuBtnX(), y: canvas.height - 90, w: MENU_BTN_W, h: MENU_BTN_H };
+}
+
+// Tab pill positions
+function getOptionsTabs() {
+    const tabW = 110, tabH = 36, tabGap = 10;
+    const totalW = tabW * 2 + tabGap;
+    const startX = menuPanelCX() - totalW / 2;
+    const y = 110;
     return {
-        back: { label: '← Back', x: menuBtnX(), y: canvas.height / 2 + 90, w: MENU_BTN_W, h: MENU_BTN_H },
+        audio:    { label: 'Audio',    x: startX,           y, w: tabW, h: tabH },
+        bindings: { label: 'Bindings', x: startX + tabW + tabGap, y, w: tabW, h: tabH },
     };
 }
 
+// Binding rows — one per action, stacked below the tabs
+function getBindingRows() {
+    const actions = Object.keys(BINDING_LABELS);
+    const rowH  = 48;
+    const rowGap = 8;
+    const startY = 175;
+    const rows = {};
+    actions.forEach((action, i) => {
+        rows[action] = {
+            y:      startY + i * (rowH + rowGap),
+            h:      rowH,
+            // The clickable "key badge" on the right side
+            btnX:   MENU_PANEL_W - menuBtnX() - 90,
+            btnW:   86,
+            btnH:   34,
+        };
+    });
+    return rows;
+}
+
 function getSliderTrack() {
-    const trackW = MENU_BTN_W;
-    return { x: menuBtnX(), y: canvas.height / 2 - 10, w: trackW, h: 10 };
+    return { x: menuBtnX(), y: canvas.height / 2 - 10, w: MENU_BTN_W, h: 10 };
 }
 
 // =============================================================
@@ -58,7 +109,6 @@ function getSliderTrack() {
 
 function drawMainMenu() {
     if (devMode) console.log('Drawing main menu');
-
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (mainMenuImage && mainMenuImage.complete && mainMenuImage.naturalWidth > 0) {
@@ -68,14 +118,12 @@ function drawMainMenu() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
-    // Left-side panel — full height, flush to left & top/bottom edges
     ctx.fillStyle = 'rgba(0, 0, 0, 0.60)';
     drawRoundRectLeft(0, 0, MENU_PANEL_W, canvas.height);
     ctx.fill();
 
     const buttons = getMainMenuButtons();
 
-    // Title — horizontally centred in panel, vertically part of the block
     ctx.save();
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
@@ -100,72 +148,108 @@ function drawMainMenu() {
 // =============================================================
 
 function drawOptionsScreen() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (mainMenuImage && mainMenuImage.complete && mainMenuImage.naturalWidth > 0) {
-        ctx.drawImage(mainMenuImage, 0, 0, canvas.width, canvas.height);
-    } else {
-        ctx.fillStyle = '#111';
+    if (pauseOptionsReturnState === gameState.PAUSED) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+    } else {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (mainMenuImage && mainMenuImage.complete && mainMenuImage.naturalWidth > 0) {
+            ctx.drawImage(mainMenuImage, 0, 0, canvas.width, canvas.height);
+        } else {
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
     }
 
-    // Left-side panel — full height, flush to left & top/bottom edges
     ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
     drawRoundRectLeft(0, 0, MENU_PANEL_W, canvas.height);
     ctx.fill();
 
-    // Title — centred in panel, near top of content block
+    // Title
     ctx.save();
     ctx.textAlign    = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font         = 'bold 32px Arial';
+    ctx.font         = 'bold 30px Arial';
     ctx.fillStyle    = '#fff';
     ctx.shadowColor  = 'rgba(0,0,0,0.9)';
     ctx.shadowBlur   = 10;
-    ctx.fillText('Options', menuPanelCX(), canvas.height / 2 - 130);
+    ctx.fillText('Options', menuPanelCX(), 68);
     ctx.shadowBlur   = 0;
     ctx.restore();
 
-    drawVolumeSlider();
+    // Tabs
+    drawOptionsTabs();
 
-    const buttons = getOptionsButtons();
-    drawMenuButton(buttons.back, menuHoveredElement === 'back');
+    // Tab content
+    if (optionsTab === 'audio') {
+        drawVolumeSlider();
+    } else {
+        drawBindingsTab();
+    }
+
+    // Back button (always at the bottom)
+    drawMenuButton(getOptionsBackButton(), menuHoveredElement === 'back');
 
     resetCtxText();
 }
 
+function drawOptionsTabs() {
+    const tabs = getOptionsTabs();
+    for (const [key, tab] of Object.entries(tabs)) {
+        const isActive  = optionsTab === key;
+        const isHovered = menuHoveredElement === `tab_${key}`;
+
+        ctx.fillStyle = isActive
+            ? '#e8c84a'
+            : isHovered ? 'rgba(255,255,255,0.15)' : 'rgba(255,255,255,0.07)';
+        drawRoundRect(tab.x, tab.y, tab.w, tab.h, 8);
+        ctx.fill();
+
+        ctx.strokeStyle = isActive ? '#f5d76e' : 'rgba(255,255,255,0.18)';
+        ctx.lineWidth   = 1.5;
+        drawRoundRect(tab.x, tab.y, tab.w, tab.h, 8);
+        ctx.stroke();
+
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font         = isActive ? 'bold 16px Arial' : '16px Arial';
+        ctx.fillStyle    = isActive ? '#1a1a1a' : '#e0e0e0';
+        ctx.fillText(tab.label, tab.x + tab.w / 2, tab.y + tab.h / 2);
+    }
+}
+
+// =============================================================
+//  DRAW — AUDIO TAB
+// =============================================================
+
 function drawVolumeSlider() {
-    const track  = getSliderTrack();
-    const labelY = track.y - 40;
-    const fillW  = track.w * masterVolume;
+    const track   = getSliderTrack();
+    const labelY  = track.y - 40;
+    const fillW   = track.w * masterVolume;
     const hovered = menuHoveredElement === 'slider' || sliderDragging;
 
-    // Label row
     ctx.save();
     ctx.textAlign    = 'left';
     ctx.textBaseline = 'middle';
-    ctx.font         = '20px Arial';
+    ctx.font         = '18px Arial';
     ctx.fillStyle    = '#ccc';
     ctx.fillText('Master Volume', menuBtnX(), labelY);
     ctx.textAlign    = 'right';
     ctx.fillStyle    = '#e8c84a';
-    ctx.font         = 'bold 20px Arial';
+    ctx.font         = 'bold 18px Arial';
     ctx.fillText(`${Math.round(masterVolume * 100)}%`, menuBtnX() + track.w, labelY);
     ctx.restore();
 
-    // Track BG
     ctx.fillStyle = 'rgba(255,255,255,0.15)';
     drawRoundRect(track.x, track.y, track.w, track.h, 5);
     ctx.fill();
 
-    // Track fill
     if (fillW > 0) {
         ctx.fillStyle = hovered ? '#f5d76e' : '#e8c84a';
         drawRoundRect(track.x, track.y, fillW, track.h, 5);
         ctx.fill();
     }
 
-    // Thumb
     const thumbX = track.x + fillW;
     const thumbR = sliderDragging ? 11 : (hovered ? 10 : 8);
     ctx.beginPath();
@@ -176,12 +260,82 @@ function drawVolumeSlider() {
     ctx.fill();
     ctx.shadowBlur  = 0;
 
-    // Tick marks
     ctx.fillStyle = 'rgba(255,255,255,0.30)';
     [0, 0.25, 0.5, 0.75, 1].forEach(t => {
         const tx = track.x + track.w * t;
         ctx.fillRect(tx - 1, track.y + track.h + 6, 2, 7);
     });
+}
+
+// =============================================================
+//  DRAW — BINDINGS TAB
+// =============================================================
+
+function drawBindingsTab() {
+    const rows = getBindingRows();
+
+    for (const [action, row] of Object.entries(rows)) {
+        const isListening = listeningForBinding === action;
+        const isHovered   = menuHoveredElement === `bind_${action}`;
+        const keyLabel    = prettyKey(keyBindings[action]);
+
+        // Action label
+        ctx.textAlign    = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.font         = '17px Arial';
+        ctx.fillStyle    = '#ccc';
+        ctx.fillText(BINDING_LABELS[action], menuBtnX(), row.y + row.h / 2);
+
+        // Key badge
+        const bx = row.btnX;
+        const by = row.y + (row.h - row.btnH) / 2;
+
+        if (isListening) {
+            // Pulsing "press a key" state
+            ctx.fillStyle = 'rgba(232, 200, 74, 0.25)';
+            drawRoundRect(bx, by, row.btnW, row.btnH, 6);
+            ctx.fill();
+            ctx.strokeStyle = '#e8c84a';
+            ctx.lineWidth   = 2;
+            drawRoundRect(bx, by, row.btnW, row.btnH, 6);
+            ctx.stroke();
+            ctx.textAlign    = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font         = 'bold 13px Arial';
+            ctx.fillStyle    = '#e8c84a';
+            ctx.fillText('...', bx + row.btnW / 2, by + row.btnH / 2);
+        } else {
+            ctx.fillStyle = isHovered ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.08)';
+            drawRoundRect(bx, by, row.btnW, row.btnH, 6);
+            ctx.fill();
+            ctx.strokeStyle = isHovered ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.2)';
+            ctx.lineWidth   = 1.5;
+            drawRoundRect(bx, by, row.btnW, row.btnH, 6);
+            ctx.stroke();
+            ctx.textAlign    = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font         = 'bold 15px Arial';
+            ctx.fillStyle    = isHovered ? '#fff' : '#e0e0e0';
+            ctx.fillText(keyLabel, bx + row.btnW / 2, by + row.btnH / 2);
+        }
+
+        // Subtle divider between rows
+        ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+        ctx.lineWidth   = 1;
+        ctx.beginPath();
+        ctx.moveTo(menuBtnX(), row.y + row.h + 4);
+        ctx.lineTo(MENU_PANEL_W - menuBtnX(), row.y + row.h + 4);
+        ctx.stroke();
+    }
+
+    // Hint text at bottom of list
+    if (listeningForBinding) {
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font         = '13px Arial';
+        ctx.fillStyle    = 'rgba(255,255,255,0.45)';
+        ctx.fillText('Press any key to rebind  •  Esc to cancel', menuPanelCX(), getBindingRows()[Object.keys(BINDING_LABELS).at(-1)].y + 60);
+    }
 }
 
 // =============================================================
@@ -210,7 +364,6 @@ function drawMenuButton(btn, hovered) {
     ctx.fillText(btn.label, btn.x + 20, btn.y + btn.h / 2);
 }
 
-// Panel flush to left edge — only rounds the right-side corners
 function drawRoundRectLeft(x, y, w, h) {
     const r = 16;
     ctx.beginPath();
@@ -254,16 +407,36 @@ function getMenuElementAtPoint(x, y) {
             if (key.startsWith('_')) continue;
             if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) return key;
         }
-    } else if (currentGameState === gameState.OPTIONS) {
-        const track = getSliderTrack();
-        const pad   = 16;
-        if (x >= track.x - pad && x <= track.x + track.w + pad &&
-            y >= track.y - pad && y <= track.y + track.h + pad) return 'slider';
+        return null;
+    }
 
-        for (const [key, btn] of Object.entries(getOptionsButtons())) {
-            if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) return key;
+    if (currentGameState === gameState.OPTIONS) {
+        // Back button
+        const back = getOptionsBackButton();
+        if (x >= back.x && x <= back.x + back.w && y >= back.y && y <= back.y + back.h) return 'back';
+
+        // Tab pills
+        for (const [key, tab] of Object.entries(getOptionsTabs())) {
+            if (x >= tab.x && x <= tab.x + tab.w && y >= tab.y && y <= tab.y + tab.h) return `tab_${key}`;
+        }
+
+        if (optionsTab === 'audio') {
+            const track = getSliderTrack();
+            const pad   = 16;
+            if (x >= track.x - pad && x <= track.x + track.w + pad &&
+                y >= track.y - pad && y <= track.y + track.h + pad) return 'slider';
+        }
+
+        if (optionsTab === 'bindings') {
+            const rows = getBindingRows();
+            for (const [action, row] of Object.entries(rows)) {
+                const bx = row.btnX;
+                const by = row.y + (row.h - row.btnH) / 2;
+                if (x >= bx && x <= bx + row.btnW && y >= by && y <= by + row.btnH) return `bind_${action}`;
+            }
         }
     }
+
     return null;
 }
 
@@ -273,11 +446,22 @@ function xToVolume(mouseX) {
 }
 
 // =============================================================
-//  CLICK HANDLER
+//  CLICK / INPUT HANDLERS
 // =============================================================
 
 function handleMenuButtonClick(key) {
     if (devMode) console.log(`Menu element clicked: ${key}`);
+
+    // Tab switches
+    if (key === 'tab_audio')    { optionsTab = 'audio';    listeningForBinding = null; return; }
+    if (key === 'tab_bindings') { optionsTab = 'bindings'; listeningForBinding = null; return; }
+
+    // Binding badge click — enter listen mode
+    if (key.startsWith('bind_')) {
+        listeningForBinding = key.slice(5); // strip 'bind_'
+        return;
+    }
+
     switch (key) {
         case 'endless':
             currentGameState = gameState.PLAYING;
@@ -291,10 +475,32 @@ function handleMenuButtonClick(key) {
             currentGameState = gameState.OPTIONS;
             break;
         case 'back':
+            listeningForBinding = null;
             currentGameState = pauseOptionsReturnState || gameState.MAIN_MENU;
             menuHoveredElement = null;
             break;
     }
+}
+
+// Called from the global keydown handler in input.js when OPTIONS is active
+function handleBindingKeypress(code) {
+    if (!listeningForBinding) return false;
+    if (code === 'Escape') {
+        listeningForBinding = null;
+        return true;
+    }
+    // Don't allow binding to a key already used by another action
+    const alreadyUsed = Object.entries(keyBindings).find(
+        ([action, bound]) => bound === code && action !== listeningForBinding
+    );
+    if (alreadyUsed) {
+        if (devMode) console.log(`${code} already bound to ${alreadyUsed[0]}, ignoring`);
+        return true;
+    }
+    keyBindings[listeningForBinding] = code;
+    if (devMode) console.log(`Rebound ${listeningForBinding} → ${code}`);
+    listeningForBinding = null;
+    return true;
 }
 
 // =============================================================
@@ -325,7 +531,7 @@ canvas.addEventListener('mousemove', (e) => {
 });
 
 canvas.addEventListener('mousedown', (e) => {
-    if (currentGameState !== gameState.OPTIONS) return;
+    if (currentGameState !== gameState.OPTIONS || optionsTab !== 'audio') return;
     const { x, y } = canvasCoords(e);
     if (getMenuElementAtPoint(x, y) === 'slider') {
         sliderDragging = true;

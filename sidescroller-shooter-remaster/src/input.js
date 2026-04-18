@@ -7,6 +7,9 @@ window.addEventListener('keydown', (e) => {
     keys[e.code] = true;
     if (devMode) console.log(`Key pressed: ${e.code}, Current game state: ${currentGameState}`);
 
+    // --- Binding capture (intercept key before anything else when listening) ---
+    if (currentGameState === gameState.OPTIONS && handleBindingKeypress(e.code)) return;
+
     // --- Cheat console toggle (C key) ---
     if (e.key === 'c' || e.key === 'C') {
         // Don't intercept 'c' when typing in the cheat console itself
@@ -33,7 +36,7 @@ window.addEventListener('keydown', (e) => {
         }
 
     } else if (currentGameState === gameState.PLAYING) {
-        if (e.code === 'Space') {
+        if (e.code === keyBindings.shoot) {
             shootBullet();
         }
         if (e.code === 'Enter' && enemiesCleared && isPlayerAtStorePosition()) {
@@ -43,7 +46,7 @@ window.addEventListener('keydown', (e) => {
                 if (devMode) console.log('No establishment selected.');
             }
         }
-        if (e.code === 'Escape') {
+        if (e.code === keyBindings.pause) {
             togglePause();
         }
         if (e.code === 'Digit1')      { selectedAmmoType = 'standard';    if (devMode) console.log('Switched to standard ammo.'); }
@@ -66,8 +69,8 @@ window.addEventListener('keydown', (e) => {
         else if (e.code === 'KeyB')   currentGameState = gameState.PLAYING;
 
     } else if (currentGameState === gameState.PAUSED) {
-        if (e.code === 'Escape') {
-            togglePause(); // Escape still resumes as a shortcut
+        if (e.code === keyBindings.pause) {
+            togglePause(); // pause key still resumes as a shortcut
         }
 
     } else if (currentGameState === gameState.ROBBERY_SUCCESS ||

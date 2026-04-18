@@ -64,16 +64,10 @@ function updatePlayer() {
     player.dx = 0;
     player.dy = 0;
 
-    if (keys['ArrowUp']    || keys['KeyW']) player.dy = -player.speed;
-    if (keys['ArrowDown']  || keys['KeyS']) player.dy =  player.speed;
-    if (keys['ArrowLeft']  || keys['KeyA']) {
-        player.dx = -player.speed;
-        player.facingRight = false;
-    }
-    if (keys['ArrowRight'] || keys['KeyD']) {
-        player.dx = player.speed;
-        player.facingRight = true;
-    }
+    if (keys[keyBindings.up])    player.dy = -player.speed;
+    if (keys[keyBindings.down])  player.dy =  player.speed;
+    if (keys[keyBindings.left])  { player.dx = -player.speed; player.facingRight = false; }
+    if (keys[keyBindings.right]) { player.dx =  player.speed; player.facingRight = true;  }
 
     player.x += player.dx;
     player.y += player.dy;
