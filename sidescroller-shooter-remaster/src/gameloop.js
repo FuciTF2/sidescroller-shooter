@@ -134,7 +134,6 @@ function gameLoop(timestamp) {
         checkLevelProgression();
         drawAmmoType();
         drawCurrency();
-        checkBulletCollisions();
         updateArrowPosition();
 
         if (enemiesCleared) drawMarkPosition();

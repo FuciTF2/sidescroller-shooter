@@ -72,7 +72,7 @@ let lastSelectedEstablishment = null;
 const ammoTypes = {
     standard:    { damage: 15, penetration: false, cost: 0 },
     highDamage:  { damage: 30, penetration: false, cost: 3 },
-    penetration: { damage: 15, penetration: true,  cost: 5 },
+    penetration: { damage: 15, penetration: 2,     cost: 5 },  // 2 = max enemies it can pierce through
 };
 
 let selectedAmmoType = 'standard';

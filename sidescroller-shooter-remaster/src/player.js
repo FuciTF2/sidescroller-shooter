@@ -157,11 +157,12 @@ function handlePlayerDamage(player, enemies, timestamp) {
         const enemyWidthScaled  = enemy.width  * enemy.scale;
         const enemyHeightScaled = enemy.height * enemy.scale;
 
+        // enemy.x/y is the sprite centre so use directly
         const distance = distanceBetween(
             playerHitboxX + playerWidthScaled  / 2,
             playerHitboxY + playerHeightScaled / 2,
-            enemy.x + enemyWidthScaled  / 2,
-            enemy.y + enemyHeightScaled / 2
+            enemy.x,
+            enemy.y
         );
 
         if (distance <= scaledEnemyAttackRange) {

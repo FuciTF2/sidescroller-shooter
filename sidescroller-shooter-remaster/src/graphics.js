@@ -115,9 +115,11 @@ function drawEnemy(enemy) {
     }
 
     if (devMode) {
+        const hw = scaledWidth  / 2;
+        const hh = scaledHeight / 2;
         ctx.strokeStyle = 'red';
         ctx.lineWidth   = 2;
-        ctx.strokeRect(enemy.x, enemy.y, enemy.width * enemy.scale, enemy.height * enemy.scale);
+        ctx.strokeRect(enemy.x - hw, enemy.y - hh, scaledWidth, scaledHeight);
     }
 }
 
