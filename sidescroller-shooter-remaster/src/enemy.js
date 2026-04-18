@@ -25,7 +25,7 @@ function initializeEnemiesForLevel(level) {
         result.push({
             x:              enemyX,
             y:              enemyY,
-            dx:             -1.5,
+            dx:             -2.8,
             dy:             0,
             animationTimer: 0,
             animationSpeed: 25,
@@ -34,7 +34,7 @@ function initializeEnemiesForLevel(level) {
             frameHeight:    150,
             totalFrames:    10,
             idleFrame:      0,
-            speed:          1.5,
+            speed:          2,
             facingLeft:     true,
             width:          enemyWidth,
             height:         enemyHeight,
@@ -102,11 +102,12 @@ function moveTowardPlayer(enemy) {
 
 function updateEnemies() {
     enemies.forEach((enemy, index) => {
+        // enemy.x/y is the sprite centre; player.x/y is top-left so offset to centre
         const distance = distanceBetween(
-            player.x + player.width / 2,
+            player.x + player.width  / 2,
             player.y + player.height / 2,
-            enemy.x + enemy.width / 2,
-            enemy.y + enemy.height / 2
+            enemy.x,
+            enemy.y
         );
 
         if (distance > enemyAttackRange) {
@@ -126,24 +127,9 @@ function updateEnemies() {
             }
         }
 
-        bullets.forEach((bullet, bulletIndex) => {
-            if (
-                bullet.x < enemy.x + enemy.width &&
-                bullet.x + bullet.width > enemy.x &&
-                bullet.y < enemy.y + enemy.height &&
-                bullet.y + bullet.height > enemy.y
-            ) {
-                enemy.health -= bullet.damage;
-                bullets.splice(bulletIndex, 1);
-                if (enemy.health <= 0) {
-                    enemies.splice(index, 1);
-                }
-            }
-        });
+        // Bullet-enemy collisions are handled entirely in updateBullets() in bullets.js
 
-        if (detectPlayerEnemyCollision(player, enemy)) {
-            resolvePlayerEnemyCollision(player, enemy);
-        }
+        // Player passes through enemies freely — no physical collision resolution
     });
 
     for (let i = 0; i < enemies.length; i++) {
