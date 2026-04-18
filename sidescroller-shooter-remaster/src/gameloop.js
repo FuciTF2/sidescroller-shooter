@@ -40,15 +40,17 @@ function checkLevelProgression() {
         playerCurrency += 2;
         triggerLevelChange(currentLevel);
         player.x = 0;
-        enemiesCleared      = false;
-        progressionChecked  = false;
+        enemiesCleared        = false;
+        progressionChecked    = false;
         selectedEstablishment = null;
+        establishmentUsed     = false;
     }
 }
 
 function triggerLevelChange(level) {
-    enemiesCleared     = false;
-    progressionChecked = false;
+    enemiesCleared        = false;
+    progressionChecked    = false;
+    establishmentUsed     = false;
     enemies = initializeEnemiesForLevel(level);
 }
 
@@ -72,6 +74,7 @@ function resetGame() {
     bullets.length        = 0;
     enemies               = initializeEnemiesForLevel(currentLevel);
     selectedEstablishment = null;
+    establishmentUsed     = false;
     robberyAttempted      = false;
     currentGameState      = gameState.PLAYING;
 }

@@ -40,10 +40,10 @@ window.addEventListener('keydown', (e) => {
             shootBullet();
         }
         if (e.code === 'Enter' && enemiesCleared && isPlayerAtStorePosition()) {
-            if (selectedEstablishment) {
+            if (selectedEstablishment && !establishmentUsed) {
                 enterEstablishment();
             } else {
-                if (devMode) console.log('No establishment selected.');
+                if (devMode) console.log(establishmentUsed ? 'Establishment already used.' : 'No establishment selected.');
             }
         }
         if (e.code === keyBindings.pause) {

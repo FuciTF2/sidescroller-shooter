@@ -53,6 +53,7 @@ let robberyAttempted    = false;
 let enemiesCleared      = false;
 let progressionChecked  = false;
 let selectedEstablishment = null;
+let establishmentUsed      = false; // true once the player has entered/completed it
 let isMovingToNextLevel = false;
 
 // --- Background scroll ---

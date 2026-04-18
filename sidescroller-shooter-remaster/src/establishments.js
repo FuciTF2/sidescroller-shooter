@@ -14,7 +14,8 @@ function selectRandomEstablishment() {
 }
 
 function enterEstablishment() {
-    selectedEstablishment = selectRandomEstablishment();
+    // Use the establishment pre-rolled by checkLevelProgression — no reroll on re-entry
+    if (!selectedEstablishment || establishmentUsed) return;
     if (devMode) console.log(`Entering establishment: ${selectedEstablishment}`);
 
     if (selectedEstablishment === ESTABLISHMENTS.STORE) {
@@ -110,8 +111,9 @@ function robEstablishment() {
 }
 
 function resetRobbery() {
-    robberyAttempted = false;
-    currentGameState = gameState.PLAYING;
+    robberyAttempted   = false;
+    establishmentUsed  = true;  // robbery is done — player cannot re-enter
+    currentGameState   = gameState.PLAYING;
 }
 
 function isPlayerAtStorePosition() {
