@@ -89,6 +89,9 @@ function gameLoop(timestamp) {
     if (currentGameState === gameState.MAIN_MENU) {
         drawMainMenu();
 
+    } else if (currentGameState === gameState.OPTIONS) {
+        drawOptionsScreen();
+
     } else if (currentGameState === gameState.CONTROLS) {
         drawControlsScreen();
 

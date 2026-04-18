@@ -5,7 +5,7 @@
 
 const player = {
     x:               100,
-    y:               canvas.height / 2 - 25,
+    y:               335, // canvas.height (720) / 2 - 25; set literally to avoid parse-time canvas dependency
     width:           100,
     height:          100,
     hitboxOffsetX:   50,
@@ -121,6 +121,7 @@ function shootBullet() {
             player.lastShootTime = currentTime;
 
             const shootingSoundInstance = new Audio(shootingSoundSrc);
+            shootingSoundInstance.volume = typeof masterVolume !== 'undefined' ? masterVolume : 1;
             shootingSoundInstance.play();
 
             if (selectedAmmoType !== 'standard') {
