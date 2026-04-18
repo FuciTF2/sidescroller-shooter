@@ -24,6 +24,28 @@ function updateArrowPosition() {
 function drawMarkPosition() {
     if (devMode) console.log('Drawing store position');
     ctx.drawImage(arrowImage, MARK_POSITION.x, arrowY, MARK_POSITION.width, MARK_POSITION.height);
+
+    if (devMode) {
+        // Show the entry zone
+        ctx.save();
+        ctx.strokeStyle = establishmentUsed ? 'rgba(255,80,80,0.7)' : 'rgba(80,255,120,0.7)';
+        ctx.lineWidth   = 2;
+        ctx.setLineDash([8, 4]);
+        ctx.strokeRect(STORE_POSITION.x, STORE_POSITION.y, STORE_POSITION.width, STORE_POSITION.height);
+        ctx.fillStyle = establishmentUsed ? 'rgba(255,80,80,0.08)' : 'rgba(80,255,120,0.08)';
+        ctx.fillRect(STORE_POSITION.x, STORE_POSITION.y, STORE_POSITION.width, STORE_POSITION.height);
+        ctx.setLineDash([]);
+        ctx.font      = 'bold 13px Arial';
+        ctx.fillStyle = establishmentUsed ? 'rgba(255,80,80,0.9)' : 'rgba(80,255,120,0.9)';
+        ctx.textAlign = 'center';
+        ctx.fillText(
+            establishmentUsed ? 'used' : (selectedEstablishment || 'none'),
+            STORE_POSITION.x + STORE_POSITION.width / 2,
+            STORE_POSITION.y - 6
+        );
+        ctx.textAlign = 'left';
+        ctx.restore();
+    }
 }
 
 // --- Background ---
