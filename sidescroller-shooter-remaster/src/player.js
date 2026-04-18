@@ -146,26 +146,20 @@ function handleShooting() {
 }
 
 function handlePlayerDamage(player, enemies, timestamp) {
-    const playerHitboxX      = player.x;
-    const playerHitboxY      = player.y;
-    const playerWidthScaled  = player.width  * player.scale;
-    const playerHeightScaled = player.height * player.scale;
+    // player.scale is updated every frame by drawPlayer, so these reflect visual size
+    const playerCX = player.x + (player.width  * player.scale) / 2;
+    const playerCY = player.y + (player.height * player.scale) / 2;
 
     const scaledEnemyAttackRange = baseEnemyAttackRange * player.scale;
 
     enemies.forEach(enemy => {
-        const enemyWidthScaled  = enemy.width  * enemy.scale;
-        const enemyHeightScaled = enemy.height * enemy.scale;
+        // enemy.drawnW/drawnH set by drawEnemy each frame — use for accurate range
+        const attackRange = (enemy.drawnW || enemy.width * enemy.scale) / 2 + scaledEnemyAttackRange;
 
-        // enemy.x/y is the sprite centre so use directly
-        const distance = distanceBetween(
-            playerHitboxX + playerWidthScaled  / 2,
-            playerHitboxY + playerHeightScaled / 2,
-            enemy.x,
-            enemy.y
-        );
+        // enemy.x/y is the sprite centre
+        const distance = distanceBetween(playerCX, playerCY, enemy.x, enemy.y);
 
-        if (distance <= scaledEnemyAttackRange) {
+        if (distance <= attackRange) {
             if (timestamp - player.lastDamageTime > player.damageInterval) {
                 player.health -= 10;
                 player.lastDamageTime = timestamp;

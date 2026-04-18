@@ -70,9 +70,12 @@ function drawPlayer() {
 
     const maxScale  = 2;
     const minScale  = 0.5;
-    const scale     = minScale + ((maxScale - minScale) * (player.y / canvas.height));
+    const scale      = minScale + ((maxScale - minScale) * (player.y / canvas.height));
     const drawWidth  = player.width  * scale;
     const drawHeight = player.height * scale;
+
+    // Write scale back so hitbox, damage, and collision all use the current visual size
+    player.scale = scale;
 
     if (!player.facingRight) {
         ctx.scale(-1, 1);
@@ -94,7 +97,7 @@ function drawPlayer() {
     if (devMode) {
         ctx.strokeStyle = 'blue';
         ctx.lineWidth   = 2;
-        ctx.strokeRect(player.x, player.y, player.width * player.scale, player.height * player.scale);
+        ctx.strokeRect(player.x, player.y, drawWidth, drawHeight);
     }
 }
 
@@ -117,7 +120,10 @@ function drawEnemy(enemy) {
     const scaledWidth  = enemy.frameWidth  * scaleFactor;
     const scaledHeight = enemy.frameHeight * scaleFactor;
 
-    enemy.scale = scaleFactor;
+    // Store actual drawn dimensions so collision/hitbox code always matches the sprite
+    enemy.scale   = scaleFactor;
+    enemy.drawnW  = scaledWidth;
+    enemy.drawnH  = scaledHeight;
 
     if (enemy.facingLeft) {
         ctx.save();
