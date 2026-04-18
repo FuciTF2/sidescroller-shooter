@@ -66,8 +66,22 @@ function updatePlayer() {
 
     if (keys[keyBindings.up])    player.dy = -player.speed;
     if (keys[keyBindings.down])  player.dy =  player.speed;
-    if (keys[keyBindings.left])  { player.dx = -player.speed; player.facingRight = false; }
-    if (keys[keyBindings.right]) { player.dx =  player.speed; player.facingRight = true;  }
+    if (keys[keyBindings.left])  player.dx = -player.speed;
+    if (keys[keyBindings.right]) player.dx =  player.speed;
+
+    // Enemies present: always face the nearest one
+    // No enemies: face the direction the player is moving (if any)
+    if (enemies.length > 0) {
+        let nearest = enemies[0];
+        let nearestDist = Math.abs(enemies[0].x - player.x);
+        for (let i = 1; i < enemies.length; i++) {
+            const d = Math.abs(enemies[i].x - player.x);
+            if (d < nearestDist) { nearestDist = d; nearest = enemies[i]; }
+        }
+        player.facingRight = nearest.x > player.x;
+    } else if (player.dx !== 0) {
+        player.facingRight = player.dx > 0;
+    }
 
     player.x += player.dx;
     player.y += player.dy;
