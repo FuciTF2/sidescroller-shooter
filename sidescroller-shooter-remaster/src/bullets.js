@@ -24,10 +24,10 @@ function updateBullets() {
             // Skip enemies this bullet has already hit
             if (bullet.hitEnemies.includes(enemy)) continue;
 
-            // Collision check — enemy.x/y is the centre of the sprite,
-            // so offset by half the scaled dimensions to get the true edges
-            const sw = enemy.width  * enemy.scale;
-            const sh = enemy.height * enemy.scale;
+            // Collision check — use drawnW/drawnH set by drawEnemy each frame
+            // so the hitbox always matches the current visual size
+            const sw = enemy.drawnW || enemy.width  * enemy.scale;
+            const sh = enemy.drawnH || enemy.height * enemy.scale;
             const ex = enemy.x - sw / 2;
             const ey = enemy.y - sh / 2;
             const hit =

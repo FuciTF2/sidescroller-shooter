@@ -105,13 +105,13 @@ const MIN_SAFE_DISTANCE    = 100;
 const enemyMinY            = 200;
 const enemyMaxY            = 440;
 const enemyVerticalSpacing = 80;
-const enemyScalingFactor   = 0.8;
+const enemyScalingFactor   = 0.55;
 const enemySpawnMinY       = 200;
 const enemySpawnMaxY       = 440;
 
 // --- HUD / world positions ---
 const MARK_POSITION = { x: 825, y: 60,  width: 40,  height: 50  };
-const STORE_POSITION = { x: 750, y: 120, width: 170, height: 160 }; // entry zone — matches HUD building area
+const STORE_POSITION = { x: 750, y: 120, width: 175, height: 160 }; // entry zone — matches HUD building area
 
 let arrowY        = MARK_POSITION.y;
 let arrowDirection = 1;
