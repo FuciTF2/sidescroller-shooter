@@ -26,6 +26,9 @@ const gameState = {
 
 let currentGameState = 'mainMenu';
 
+// Tracks where the Options screen should return to (main menu or pause menu)
+let pauseOptionsReturnState = 'mainMenu';
+
 // --- Level & currency ---
 let currentLevel = 1;
 let playerCurrency = 0;

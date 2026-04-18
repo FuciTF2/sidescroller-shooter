@@ -67,15 +67,7 @@ window.addEventListener('keydown', (e) => {
 
     } else if (currentGameState === gameState.PAUSED) {
         if (e.code === 'Escape') {
-            togglePause();
-        } else if (e.code === 'KeyR') {
-            resetGame();
-            currentGameState = gameState.PLAYING;
-            if (devMode) console.log('Restarting the game');
-        } else if (e.code === 'KeyM') {
-            resetGame();
-            currentGameState = gameState.MAIN_MENU;
-            if (devMode) console.log('Returning to main menu');
+            togglePause(); // Escape still resumes as a shortcut
         }
 
     } else if (currentGameState === gameState.ROBBERY_SUCCESS ||

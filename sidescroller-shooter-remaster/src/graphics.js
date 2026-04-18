@@ -221,17 +221,7 @@ function drawControlsScreen() {
     ctx.drawImage(controlsImage, 0, 0, canvas.width, canvas.height);
 }
 
-function drawPauseMenu() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle  = 'white';
-    ctx.font       = '40px Arial';
-    ctx.textAlign  = 'center';
-    ctx.fillText('Game Paused', canvas.width / 2, canvas.height / 2 - 50);
-    ctx.fillStyle  = 'yellow';
-    ctx.font       = '30px Arial';
-    ctx.fillText('Press Escape to Resume', canvas.width / 2, canvas.height / 2 + 50);
-}
+// drawPauseMenu() lives in pausemenu.js
 
 function drawStoreScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
