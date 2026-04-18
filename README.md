@@ -1,6 +1,7 @@
 # javascript 2.5D shooter
 
 A side scrolling 2.5D shooter made in javascript. <br />
+This is the version of the game which is in a singular js file. <br /> 
 
 Credits: <br />
 	- Programming - Me <br />
