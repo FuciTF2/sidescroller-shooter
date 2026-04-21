@@ -36,15 +36,15 @@ function handleEstablishmentInput(keyCode) {
     if (currentGameState === gameState.STORE_SCREEN) {
         if (keyCode === 'Digit1')      purchaseItem('highDamageAmmo');
         else if (keyCode === 'Digit2') purchaseItem('penetrationAmmo');
-        else if (keyCode === 'KeyB')   currentGameState = gameState.PLAYING;
+        else if (keyCode === keyBindings.exitEstablishment)   currentGameState = gameState.PLAYING;
     } else if (currentGameState === gameState.RESTAURANT_SCREEN) {
         if (keyCode === 'Digit1')      purchaseMeal(meals.RED_FISH);
         else if (keyCode === 'Digit2') purchaseMeal(meals.BEEF_SOUP);
         else if (keyCode === 'Digit3') purchaseMeal(meals.FRIED_PIRANHA);
-        else if (keyCode === 'KeyB')   currentGameState = gameState.PLAYING;
+        else if (keyCode === keyBindings.exitEstablishment)   currentGameState = gameState.PLAYING;
     } else if (currentGameState === gameState.ROBBERY_SCREEN) {
         if (keyCode === 'Digit1')    robEstablishment();
-        else if (keyCode === 'KeyB') currentGameState = gameState.PLAYING;
+        else if (keyCode === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
     }
 }
 

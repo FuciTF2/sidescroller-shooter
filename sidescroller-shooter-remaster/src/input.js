@@ -55,7 +55,7 @@ window.addEventListener('keydown', (e) => {
 
     } else if (currentGameState === gameState.STORE_SCREEN ||
                currentGameState === gameState.ROBBERY_SCREEN) {
-        if (e.code === 'KeyB') {
+        if (e.code === keyBindings.exitEstablishment) {
             currentGameState = gameState.PLAYING;
         } else {
             handleEstablishmentInput(e.code);
@@ -66,7 +66,7 @@ window.addEventListener('keydown', (e) => {
         if (e.code === 'Digit1')      purchaseMeal(meals.RED_FISH);
         else if (e.code === 'Digit2') purchaseMeal(meals.BEEF_SOUP);
         else if (e.code === 'Digit3') purchaseMeal(meals.FRIED_PIRANHA);
-        else if (e.code === 'KeyB')   currentGameState = gameState.PLAYING;
+        else if (e.code === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
 
     } else if (currentGameState === gameState.PAUSED) {
         if (e.code === keyBindings.pause) {

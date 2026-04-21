@@ -36,6 +36,7 @@ const keyBindings = {
     right: 'KeyD',
     shoot: 'Space',
     pause: 'Escape',
+    exitEstablishment: 'KeyB',
 };
 
 // Tracks where the Options screen should return to (main menu or pause menu)
@@ -111,7 +112,7 @@ const enemySpawnMaxY       = 440;
 
 // --- HUD / world positions ---
 const MARK_POSITION = { x: 825, y: 60,  width: 40,  height: 50  };
-const STORE_POSITION = { x: 750, y: 120, width: 175, height: 160 }; // entry zone — matches HUD building area
+const STORE_POSITION = { x: 750, y: 120, width: 300, height: 160 }; // entry zone — matches HUD building area
 
 let arrowY        = MARK_POSITION.y;
 let arrowDirection = 1;

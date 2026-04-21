@@ -24,12 +24,15 @@ function checkLevelProgression() {
         playerCurrency += 100;
         if (devMode) console.log(`Level cleared! Player currency: ${playerCurrency}`);
 
-        const randomNumber = Math.floor(Math.random() * 100) + 1;
-        if (devMode) console.log(`Generated Random Number: ${randomNumber}`);
+        // Roll until we get something different from last time
+        const allEstablishments = Object.values(ESTABLISHMENTS);
+        let picked;
+        do {
+            picked = allEstablishments[Math.floor(Math.random() * allEstablishments.length)];
+        } while (picked === lastSelectedEstablishment && allEstablishments.length > 1);
 
-        if      (randomNumber >= 1  && randomNumber <= 33) selectedEstablishment = ESTABLISHMENTS.STORE;
-        else if (randomNumber >= 34 && randomNumber <= 66) selectedEstablishment = ESTABLISHMENTS.RESTAURANT;
-        else if (randomNumber >= 67 && randomNumber <= 100) selectedEstablishment = ESTABLISHMENTS.ROBBERY;
+        selectedEstablishment     = picked;
+        lastSelectedEstablishment = picked;
 
         if (devMode) console.log(`Selected Establishment: ${selectedEstablishment}`);
         progressionChecked = true;

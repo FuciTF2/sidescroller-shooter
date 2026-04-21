@@ -33,7 +33,8 @@ const BINDING_LABELS = {
     left:  'Move Left',
     right: 'Move Right',
     shoot: 'Shoot',
-    pause: 'Pause',
+    pause:             'Pause',
+    exitEstablishment: 'Leave Shop',
 };
 
 // Pretty-print a KeyboardEvent.code string  e.g. 'KeyW' → 'W', 'Space' → 'Space'
