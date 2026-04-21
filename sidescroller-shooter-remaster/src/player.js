@@ -11,7 +11,7 @@ const player = {
     hitboxOffsetX:   50,
     hitboxOffsetY:   50,
     scale:           1.5,
-    speed:           4.5,
+    speed:           390, // px/sec (was 4.5px/frame * 60fps)
     dx:              0,
     dy:              0,
     sprite:          null, // Set after images load (see assets.js)
@@ -58,7 +58,7 @@ function updatePlayerSprite() {
     }
 }
 
-function updatePlayer() {
+function updatePlayer(delta) {
     const playerWidth = calculatePlayerWidth(player.y);
 
     player.dx = 0;
@@ -81,22 +81,26 @@ function updatePlayer() {
         player.facingRight = nearest.x > player.x;
     } else if (player.dx !== 0) {
         player.facingRight = player.dx > 0;
+    } else {
+        player.facingRight = true; // default face right when no enemies and standing still
     }
 
-    player.x += player.dx;
-    player.y += player.dy;
+    player.x += player.dx * delta;
+    player.y += player.dy * delta;
 
     const minY = 200;
     const maxY = 440;
+    // Check right-edge level trigger BEFORE clamping so it can actually be reached
+    if (enemiesCleared && player.x + playerWidth >= canvas.width) {
+        if (devMode) console.log('Player reached the right edge, proceeding to next level');
+        triggerLevelChange();
+        player.x = 0;
+    }
+
     if (player.x < 0)                            player.x = 0;
     if (player.x + playerWidth > canvas.width)   player.x = canvas.width - playerWidth;
     if (player.y < minY)                         player.y = minY;
     if (player.y > maxY)                         player.y = maxY;
-
-    if (enemiesCleared && player.x + playerWidth >= canvas.width) {
-        if (devMode) console.log('Player reached the right edge, proceeding to next level');
-        triggerLevelChange();
-    }
 
     updatePlayerSprite();
 }
@@ -120,7 +124,7 @@ function shootBullet() {
                 y:          bulletStartY,
                 width:      10,
                 height:     5,
-                speed:      player.facingRight ? 10 : -10,
+                speed:      player.facingRight ? 600 : -600, // px/sec
                 damage:     ammo.damage,
                 penetration: ammo.penetration,
                 hitEnemies: []

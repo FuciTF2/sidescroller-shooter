@@ -25,7 +25,7 @@ function initializeEnemiesForLevel(level) {
         result.push({
             x:              enemyX,
             y:              enemyY,
-            dx:             -2.8,
+            dx:             -168,
             dy:             0,
             animationTimer: 0,
             animationSpeed: 25,
@@ -34,7 +34,7 @@ function initializeEnemiesForLevel(level) {
             frameHeight:    150,
             totalFrames:    10,
             idleFrame:      0,
-            speed:          2,
+            speed:          168, // px/sec (was 2.8px/frame * 60fps)
             facingLeft:     true,
             width:          enemyWidth,
             height:         enemyHeight,
@@ -58,9 +58,9 @@ function updateEnemyAnimation(timestamp) {
     });
 }
 
-function updateEnemyPositions(enemies, player) {
+function updateEnemyPositions(enemies, player, delta) {
     enemies.forEach(enemy => {
-        moveTowardPlayer(enemy);
+        moveTowardPlayer(enemy, delta);
 
         if (isNaN(enemy.x) || isNaN(enemy.y)) {
             if (devMode) console.error('Invalid position values:', enemy.x, enemy.y);
@@ -68,7 +68,7 @@ function updateEnemyPositions(enemies, player) {
     });
 }
 
-function moveTowardPlayer(enemy) {
+function moveTowardPlayer(enemy, delta) {
     if (enemy.x > canvas.width) {
         enemy.dx = -enemy.speed;
         enemy.dy = 0;
@@ -90,8 +90,8 @@ function moveTowardPlayer(enemy) {
         }
     }
 
-    enemy.x += enemy.dx;
-    enemy.y += enemy.dy;
+    enemy.x += enemy.dx * delta;
+    enemy.y += enemy.dy * delta;
 
     if (enemy.dx > 0)      enemy.facingLeft = false;
     else if (enemy.dx < 0) enemy.facingLeft = true;
@@ -100,7 +100,7 @@ function moveTowardPlayer(enemy) {
     if (enemy.y > enemyMaxY) enemy.y = enemyMaxY;
 }
 
-function updateEnemies() {
+function updateEnemies(delta) {
     enemies.forEach((enemy, index) => {
         // enemy.x/y is the sprite centre; player.x/y is top-left so offset to centre
         const distance = distanceBetween(
@@ -111,7 +111,7 @@ function updateEnemies() {
         );
 
         if (distance > enemyAttackRange) {
-            moveTowardPlayer(enemy);
+            moveTowardPlayer(enemy, delta);
         }
 
         if (distance <= enemyAttackRange) {

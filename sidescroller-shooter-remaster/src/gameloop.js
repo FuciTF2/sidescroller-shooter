@@ -35,23 +35,17 @@ function checkLevelProgression() {
         progressionChecked = true;
     }
 
-    if (player.x > canvas.width - player.width && enemiesCleared) {
-        currentLevel++;
-        playerCurrency += 2;
-        triggerLevelChange(currentLevel);
-        player.x = 0;
-        enemiesCleared        = false;
-        progressionChecked    = false;
-        selectedEstablishment = null;
-        establishmentUsed     = false;
-    }
+    // Level transition is triggered by updatePlayer() when player reaches the right edge
 }
 
 function triggerLevelChange(level) {
+    currentLevel++;
+    playerCurrency       += 2;
     enemiesCleared        = false;
     progressionChecked    = false;
+    selectedEstablishment = null;
     establishmentUsed     = false;
-    enemies = initializeEnemiesForLevel(level);
+    enemies = initializeEnemiesForLevel(currentLevel);
 }
 
 function togglePause() {
@@ -86,7 +80,13 @@ function restartGame() {
 
 // --- Main game loop ---
 
+let lastTimestamp = 0;
+
 function gameLoop(timestamp) {
+    // Delta time in seconds, capped at 100ms to avoid huge jumps after tab switch
+    const delta = Math.min((timestamp - lastTimestamp) / 1000, 0.1);
+    lastTimestamp = timestamp;
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     if (currentGameState === gameState.MAIN_MENU) {
@@ -116,24 +116,24 @@ function gameLoop(timestamp) {
 
         updateEnemyAnimation(timestamp);
         enemies.forEach(enemy => {
-            moveTowardPlayer(enemy);
+            moveTowardPlayer(enemy, delta);
             drawEnemy(enemy);
             drawEnemyHealthBar(enemy);
         });
 
         ctx.drawImage(images.hud, 0, 120);
 
-        updatePlayer();
+        updatePlayer(delta);
         handlePlayerDamage(player, enemies, timestamp);
-        updateBullets();
+        updateBullets(delta);
         drawBullets();
-        updateEnemyPositions(enemies, player);
+        updateEnemyPositions(enemies, player, delta);
         drawPlayer();
         checkGameOver();
         drawPlayerHealth();
         drawLevelInfo();
         handleShooting();
-        updateEnemies();
+        updateEnemies(delta);
         checkLevelProgression();
         drawAmmoType();
         drawCurrency();

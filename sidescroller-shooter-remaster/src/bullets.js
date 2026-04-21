@@ -4,13 +4,13 @@
 // ============================================================
 
 const bullets = [];
-const bulletSpeed = 10;
+const bulletSpeed = 600; // px/sec (was 10px/frame * 60fps)
 
-function updateBullets() {
+function updateBullets(delta) {
     // Iterate backwards so splicing doesn't skip entries
     for (let bi = bullets.length - 1; bi >= 0; bi--) {
         const bullet = bullets[bi];
-        bullet.x += bullet.speed;
+        bullet.x += bullet.speed * delta;
 
         // Remove if off screen
         if (bullet.x < 0 || bullet.x > canvas.width) {
