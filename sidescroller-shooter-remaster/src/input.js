@@ -81,9 +81,15 @@ window.addEventListener('keydown', (e) => {
 
     } else if (currentGameState === gameState.LOCATION_TRANSITION) {
         if (e.code === 'Enter') {
-            // Spawn enemies for the new location then start playing
-            enemies = initializeEnemiesForLevel(currentLevel);
-            currentGameState = gameState.PLAYING;
+            startLocationDialog();
+        }
+
+    } else if (currentGameState === gameState.WALKING_IN) {
+        // Walk-in is not skippable — ignore all input
+
+    } else if (currentGameState === gameState.DIALOG) {
+        if (e.code === 'Enter' || e.code === 'Space') {
+            advanceDialog();
         }
 
     } else if (currentGameState === gameState.STORY_COMPLETE) {

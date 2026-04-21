@@ -25,6 +25,8 @@ const gameState = {
     STORY:            'story',
     LOCATION_TRANSITION: 'locationTransition',
     STORY_COMPLETE:   'storyComplete',
+    DIALOG:           'dialog',
+    WALKING_IN:       'walkingIn',
 };
 
 let currentGameState = 'mainMenu';
@@ -53,12 +55,66 @@ let playerCurrency = 0;
 let isStoryMode = false;
 
 const STORY_LOCATIONS = [
-    { id: 1, name: 'Location 1', subtitle: 'The Beginning',    color: '#1a3a2a', levels: [1,  2,  3,  4,  5]  },
-    { id: 2, name: 'Location 2', subtitle: 'The Outskirts',    color: '#2a1a1a', levels: [6,  7,  8,  9,  10] },
-    { id: 3, name: 'Location 3', subtitle: 'The Docks',        color: '#1a1a3a', levels: [11, 12, 13, 14, 15] },
-    { id: 4, name: 'Location 4', subtitle: 'The Warehouse',    color: '#2a2a1a', levels: [16, 17, 18, 19, 20] },
-    { id: 5, name: 'Location 5', subtitle: 'The Factory',      color: '#2a1a2a', levels: [21, 22, 23, 24, 25] },
-    { id: 6, name: 'Location 6', subtitle: 'The Final Stand',  color: '#1a2a2a', levels: [26, 27, 28, 29, 30] },
+    {
+        id: 1, name: 'Location 1', subtitle: 'The Beginning', color: '#1a3a2a',
+        levels: [1, 2, 3, 4, 5],
+        dialog: [
+            "So this is where it all starts...",
+            "I don't know who these people are or why they're after me.",
+            "But I'm not going down without a fight.",
+            "Let's see what you've got."
+        ]
+    },
+    {
+        id: 2, name: 'Location 2', subtitle: 'The Outskirts', color: '#2a1a1a',
+        levels: [6, 7, 8, 9, 10],
+        dialog: [
+            "The outskirts. Further from the city, closer to the truth.",
+            "There are more of them here than I expected.",
+            "Someone is coordinating this. Someone with resources.",
+            "I need to keep moving."
+        ]
+    },
+    {
+        id: 3, name: 'Location 3', subtitle: 'The Docks', color: '#1a1a3a',
+        levels: [11, 12, 13, 14, 15],
+        dialog: [
+            "The docks. I can smell the salt and rust from here.",
+            "Shipments coming in at night... contraband, maybe worse.",
+            "Whatever they're moving through here, I'm going to stop it.",
+            "Stay sharp."
+        ]
+    },
+    {
+        id: 4, name: 'Location 4', subtitle: 'The Warehouse', color: '#2a2a1a',
+        levels: [16, 17, 18, 19, 20],
+        dialog: [
+            "A warehouse. Of course.",
+            "Dark corners, long shadows — exactly where I don't want to be.",
+            "But this is where the trail leads.",
+            "No turning back now."
+        ]
+    },
+    {
+        id: 5, name: 'Location 5', subtitle: 'The Factory', color: '#2a1a2a',
+        levels: [21, 22, 23, 24, 25],
+        dialog: [
+            "A factory. Still running, by the sound of it.",
+            "They're using this place for something. Something big.",
+            "The air tastes like metal and bad decisions.",
+            "Almost there. I can feel it."
+        ]
+    },
+    {
+        id: 6, name: 'Location 6', subtitle: 'The Final Stand', color: '#1a2a2a',
+        levels: [26, 27, 28, 29, 30],
+        dialog: [
+            "This is it. The end of the line.",
+            "Everything led here. Every bullet, every close call.",
+            "Whoever is behind all this... they're close.",
+            "Finish it."
+        ]
+    },
 ];
 
 const STORY_TOTAL_LEVELS = 30;

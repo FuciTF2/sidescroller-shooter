@@ -211,6 +211,14 @@ function gameLoop(timestamp) {
     } else if (currentGameState === gameState.LOCATION_TRANSITION) {
         drawLocationTransition();
 
+    } else if (currentGameState === gameState.WALKING_IN) {
+        updateWalkIn(delta);
+        drawWalkIn();
+
+    } else if (currentGameState === gameState.DIALOG) {
+        updateDialog(delta);
+        drawDialog();
+
     } else if (currentGameState === gameState.STORY_COMPLETE) {
         drawStoryCompleteScreen();
     }
