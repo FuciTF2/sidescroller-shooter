@@ -78,6 +78,19 @@ window.addEventListener('keydown', (e) => {
         if (e.code === 'Enter') {
             currentGameState = gameState.PLAYING;
         }
+
+    } else if (currentGameState === gameState.LOCATION_TRANSITION) {
+        if (e.code === 'Enter') {
+            // Spawn enemies for the new location then start playing
+            enemies = initializeEnemiesForLevel(currentLevel);
+            currentGameState = gameState.PLAYING;
+        }
+
+    } else if (currentGameState === gameState.STORY_COMPLETE) {
+        if (e.code === 'Enter') {
+            resetGame();
+            currentGameState = gameState.MAIN_MENU;
+        }
     }
 });
 

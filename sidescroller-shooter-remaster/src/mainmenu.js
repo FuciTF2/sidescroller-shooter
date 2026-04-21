@@ -469,7 +469,11 @@ function handleMenuButtonClick(key) {
             enemies = initializeEnemiesForLevel(currentLevel);
             break;
         case 'story':
-            if (devMode) console.log('Story mode — not yet implemented');
+            isStoryMode  = true;
+            currentLevel = 1;
+            enemies      = initializeEnemiesForLevel(currentLevel);
+            // Show the first location transition screen before playing
+            currentGameState = gameState.LOCATION_TRANSITION;
             break;
         case 'options':
             pauseOptionsReturnState = gameState.MAIN_MENU;

@@ -284,6 +284,106 @@ function drawRobberyFailureScreen() {
     setTimeout(() => { currentGameState = gameState.PLAYING; }, 2000);
 }
 
+function drawLocationTransition() {
+    const loc = getLocationForLevel(currentLevel);
+    if (!loc) return;
+
+    // Background — use location colour as a tint over black
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = loc.color;
+    ctx.globalAlpha = 0.6;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+
+    // Decorative horizontal lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+
+    // Location number badge
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = 'bold 18px Arial';
+    ctx.fillStyle    = 'rgba(255,255,255,0.5)';
+    ctx.fillText(`LOCATION ${loc.id} OF ${STORY_LOCATIONS.length}`, canvas.width / 2, canvas.height / 2 - 110);
+
+    // Big location name
+    ctx.font      = 'bold 72px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur  = 20;
+    ctx.fillText(loc.name, canvas.width / 2, canvas.height / 2 - 30);
+    ctx.shadowBlur  = 0;
+
+    // Subtitle
+    ctx.font      = '32px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.75)';
+    ctx.fillText(loc.subtitle, canvas.width / 2, canvas.height / 2 + 50);
+
+    // Level range
+    ctx.font      = '20px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    const firstLevel = loc.levels[0];
+    const lastLevel  = loc.levels[loc.levels.length - 1];
+    ctx.fillText(`Levels ${firstLevel} – ${lastLevel}`, canvas.width / 2, canvas.height / 2 + 100);
+
+    // Prompt
+    ctx.font      = 'bold 20px Arial';
+    ctx.fillStyle = '#e8c84a';
+    ctx.fillText('Press ENTER to continue', canvas.width / 2, canvas.height / 2 + 170);
+
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+}
+
+function drawStoryCompleteScreen() {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Gold glow
+    ctx.fillStyle = 'rgba(232,200,74,0.08)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.font         = 'bold 80px Arial';
+    ctx.fillStyle    = '#e8c84a';
+    ctx.shadowColor  = 'rgba(232,200,74,0.6)';
+    ctx.shadowBlur   = 30;
+    ctx.fillText('You Win!', canvas.width / 2, canvas.height / 2 - 60);
+    ctx.shadowBlur   = 0;
+
+    ctx.font      = '30px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fillText('All 30 levels complete.', canvas.width / 2, canvas.height / 2 + 20);
+
+    ctx.font      = 'bold 22px Arial';
+    ctx.fillStyle = '#e8c84a';
+    ctx.fillText('Press ENTER to return to the main menu', canvas.width / 2, canvas.height / 2 + 100);
+
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+}
+
+function drawLocationIndicator() {
+    // Small location label in the top-right during story mode play
+    if (!isStoryMode) return;
+    const loc = getCurrentLocation();
+    if (!loc) return;
+
+    ctx.save();
+    ctx.textAlign    = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.font         = 'bold 16px Arial';
+    ctx.fillStyle    = 'rgba(255,255,255,0.7)';
+    ctx.fillText(`${loc.name}  •  Level ${currentLevel}`, canvas.width - 20, 55);
+    ctx.restore();
+}
+
 function drawGameOverScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle  = 'black';

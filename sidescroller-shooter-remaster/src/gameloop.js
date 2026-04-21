@@ -41,13 +41,28 @@ function checkLevelProgression() {
     // Level transition is triggered by updatePlayer() when player reaches the right edge
 }
 
-function triggerLevelChange(level) {
+function triggerLevelChange() {
+    const prevLevel = currentLevel;
     currentLevel++;
     playerCurrency       += 2;
     enemiesCleared        = false;
     progressionChecked    = false;
     selectedEstablishment = null;
     establishmentUsed     = false;
+
+    if (isStoryMode) {
+        // Story complete
+        if (currentLevel > STORY_TOTAL_LEVELS) {
+            currentGameState = gameState.STORY_COMPLETE;
+            return;
+        }
+        // New location — show transition screen
+        if (isNewLocation(prevLevel, currentLevel)) {
+            currentGameState = gameState.LOCATION_TRANSITION;
+            return; // enemies will be spawned when player dismisses the transition
+        }
+    }
+
     enemies = initializeEnemiesForLevel(currentLevel);
 }
 
@@ -73,6 +88,7 @@ function resetGame() {
     selectedEstablishment = null;
     establishmentUsed     = false;
     robberyAttempted      = false;
+    isStoryMode           = false;
     currentGameState      = gameState.PLAYING;
 }
 
@@ -141,6 +157,7 @@ function gameLoop(timestamp) {
         drawAmmoType();
         drawCurrency();
         updateArrowPosition();
+        drawLocationIndicator();
 
         if (enemiesCleared) drawMarkPosition();
 
@@ -190,6 +207,12 @@ function gameLoop(timestamp) {
 
     } else if (currentGameState === gameState.GAME_OVER) {
         drawGameOverScreen();
+
+    } else if (currentGameState === gameState.LOCATION_TRANSITION) {
+        drawLocationTransition();
+
+    } else if (currentGameState === gameState.STORY_COMPLETE) {
+        drawStoryCompleteScreen();
     }
 
     requestAnimationFrame(gameLoop);

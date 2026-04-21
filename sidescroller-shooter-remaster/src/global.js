@@ -22,6 +22,9 @@ const gameState = {
     CONTROLS:         'controls',
     ENDLESS:          'endless',
     OPTIONS:          'options',
+    STORY:            'story',
+    LOCATION_TRANSITION: 'locationTransition',
+    STORY_COMPLETE:   'storyComplete',
 };
 
 let currentGameState = 'mainMenu';
@@ -45,6 +48,34 @@ let pauseOptionsReturnState = 'mainMenu';
 // --- Level & currency ---
 let currentLevel = 1;
 let playerCurrency = 0;
+
+// --- Story mode ---
+let isStoryMode = false;
+
+const STORY_LOCATIONS = [
+    { id: 1, name: 'Location 1', subtitle: 'The Beginning',    color: '#1a3a2a', levels: [1,  2,  3,  4,  5]  },
+    { id: 2, name: 'Location 2', subtitle: 'The Outskirts',    color: '#2a1a1a', levels: [6,  7,  8,  9,  10] },
+    { id: 3, name: 'Location 3', subtitle: 'The Docks',        color: '#1a1a3a', levels: [11, 12, 13, 14, 15] },
+    { id: 4, name: 'Location 4', subtitle: 'The Warehouse',    color: '#2a2a1a', levels: [16, 17, 18, 19, 20] },
+    { id: 5, name: 'Location 5', subtitle: 'The Factory',      color: '#2a1a2a', levels: [21, 22, 23, 24, 25] },
+    { id: 6, name: 'Location 6', subtitle: 'The Final Stand',  color: '#1a2a2a', levels: [26, 27, 28, 29, 30] },
+];
+
+const STORY_TOTAL_LEVELS = 30;
+const LEVELS_PER_LOCATION = 5;
+
+function getCurrentLocation() {
+    return STORY_LOCATIONS[Math.floor((currentLevel - 1) / LEVELS_PER_LOCATION)];
+}
+
+function getLocationForLevel(level) {
+    return STORY_LOCATIONS[Math.floor((level - 1) / LEVELS_PER_LOCATION)];
+}
+
+function isNewLocation(prevLevel, newLevel) {
+    return Math.floor((prevLevel - 1) / LEVELS_PER_LOCATION) !==
+           Math.floor((newLevel  - 1) / LEVELS_PER_LOCATION);
+}
 
 // --- Input ---
 let keys = {};
