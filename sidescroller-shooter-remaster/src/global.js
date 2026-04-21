@@ -270,7 +270,7 @@ const BOSS_BULLET_SPEED   = 420;  // px/sec
 
 // --- HUD / world positions ---
 const MARK_POSITION = { x: 825, y: 60,  width: 40,  height: 50  };
-const STORE_POSITION = { x: 750, y: 120, width: 300, height: 160 }; // entry zone — matches HUD building area
+const STORE_POSITION = { x: 750, y: 120, width: 170, height: 160 }; // entry zone — matches HUD building area
 
 let arrowY        = MARK_POSITION.y;
 let arrowDirection = 1;
