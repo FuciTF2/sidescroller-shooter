@@ -84,6 +84,7 @@ function resetGame() {
     currentLevel          = 1;
     enemiesCleared        = false;
     bullets.length        = 0;
+    bossBullets.length    = 0;
     enemies               = initializeEnemiesForLevel(currentLevel);
     selectedEstablishment = null;
     establishmentUsed     = false;
@@ -135,7 +136,7 @@ function gameLoop(timestamp) {
 
         updateEnemyAnimation(timestamp);
         enemies.forEach(enemy => {
-            moveTowardPlayer(enemy, delta);
+            if (!enemy.isBoss) moveTowardPlayer(enemy, delta);
             drawEnemy(enemy);
             drawEnemyHealthBar(enemy);
         });
@@ -146,6 +147,8 @@ function gameLoop(timestamp) {
         handlePlayerDamage(player, enemies, timestamp);
         updateBullets(delta);
         drawBullets();
+        updateBossBullets(delta);
+        drawBossBullets();
         updateEnemyPositions(enemies, player, delta);
         drawPlayer();
         checkGameOver();

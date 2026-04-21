@@ -159,21 +159,38 @@ function drawEnemyHealthBar(enemy) {
     const scaleFactor  = calculateScalingFactor(enemy.y);
     const scaledHeight = enemy.frameHeight * scaleFactor;
 
-    const barWidth  = 50;
-    const barHeight = 5;
+    const barWidth  = enemy.isBoss ? 160 : 50;
+    const barHeight = enemy.isBoss ? 10  : 5;
     const barX      = enemy.x - barWidth / 2;
-    const barY      = enemy.y - scaledHeight / 2 - barHeight - 5;
+    const barY      = enemy.y - scaledHeight / 2 - barHeight - 10;
 
-    ctx.fillStyle = 'gray';
+    // Background
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(barX - 2, barY - 2, barWidth + 4, barHeight + 4);
+
+    ctx.fillStyle = '#333';
     ctx.fillRect(barX, barY, barWidth, barHeight);
 
-    const healthWidth = (enemy.health / enemy.maxHealth) * barWidth;
-    ctx.fillStyle = 'green';
-    ctx.fillRect(barX, barY, healthWidth, barHeight);
+    const healthFrac  = enemy.health / enemy.maxHealth;
+    ctx.fillStyle     = enemy.isBoss
+        ? `rgb(${Math.round(255 * (1 - healthFrac))}, ${Math.round(180 * healthFrac)}, 0)`
+        : 'green';
+    ctx.fillRect(barX, barY, healthFrac * barWidth, barHeight);
 
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth   = 1;
+    ctx.strokeStyle = enemy.isBoss ? '#e8c84a' : 'black';
+    ctx.lineWidth   = enemy.isBoss ? 1.5 : 1;
     ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+    if (enemy.isBoss) {
+        const label = enemy.isFakeOut ? 'BOSS ?' : 'BOSS';
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'bottom';
+        ctx.font         = 'bold 13px Arial';
+        ctx.fillStyle    = '#e8c84a';
+        ctx.fillText(label, enemy.x, barY - 4);
+        ctx.textAlign    = 'left';
+        ctx.textBaseline = 'alphabetic';
+    }
 }
 
 function drawEnemyFrame(ctx, spriteSheet, enemy, frameX, frameY) {

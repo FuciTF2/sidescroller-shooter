@@ -197,6 +197,15 @@ const enemyScalingFactor   = 0.55;
 const enemySpawnMinY       = 200;
 const enemySpawnMaxY       = 440;
 
+// --- Boss levels ---
+const BOSS_LEVELS = [10, 20, 30];
+function isBossLevel(level) { return BOSS_LEVELS.includes(level); }
+
+// Boss bullets (shot by boss at player) — separate from player bullets
+const bossBullets = [];
+const BOSS_SHOOT_COOLDOWN = 1800; // ms between boss shots
+const BOSS_BULLET_SPEED   = 420;  // px/sec
+
 // --- HUD / world positions ---
 const MARK_POSITION = { x: 825, y: 60,  width: 40,  height: 50  };
 const STORE_POSITION = { x: 750, y: 120, width: 300, height: 160 }; // entry zone — matches HUD building area
