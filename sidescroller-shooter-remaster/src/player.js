@@ -107,39 +107,61 @@ function updatePlayer(delta) {
 
 function shootBullet() {
     const currentTime = Date.now();
-    if (currentTime - player.lastShootTime >= player.shootCooldown) {
-        if (ammoInventory[selectedAmmoType] > 0 || selectedAmmoType === 'standard') {
-            const ammo = ammoTypes[selectedAmmoType];
+    const weapon = WEAPONS[currentWeapon];
+    if (!weapon) return;
 
-            const scaledWidth  = player.width  * player.scale;
-            const scaledHeight = player.height * player.scale;
+    // Use weapon cooldown
+    if (currentTime - player.lastShootTime < weapon.cooldown) return;
 
-            const bulletStartX = player.facingRight
-                ? player.x + (player.width * 0.8)
-                : player.x - (scaledWidth - player.width) / 2;
-            const bulletStartY = player.y + scaledHeight / 4.365;
+    // Check ammo
+    if (!weapon.infinite && weaponAmmo[currentWeapon] <= 0) {
+        // Fall back to pistol if out of ammo
+        currentWeapon = 'pistol';
+        return;
+    }
 
-            bullets.push({
-                x:          bulletStartX,
-                y:          bulletStartY,
-                width:      10,
-                height:     5,
-                speed:      player.facingRight ? 600 : -600, // px/sec
-                damage:     ammo.damage,
-                penetration: ammo.penetration,
-                hitEnemies: []
-            });
+    const scaledWidth  = player.width  * player.scale;
+    const scaledHeight = player.height * player.scale;
 
-            player.lastShootTime = currentTime;
+    const bulletStartX = player.facingRight
+        ? player.x + (player.width * 0.8)
+        : player.x - (scaledWidth - player.width) / 2;
+    const bulletStartY = player.y + scaledHeight / 4.365;
 
-            const shootingSoundInstance = new Audio(shootingSoundSrc);
-            shootingSoundInstance.volume = typeof masterVolume !== 'undefined' ? masterVolume : 1;
-            shootingSoundInstance.play();
+    const dir = player.facingRight ? 1 : -1;
 
-            if (selectedAmmoType !== 'standard') {
-                ammoInventory[selectedAmmoType]--;
-            }
-        }
+    // Fire bulletsPerShot bullets, spread vertically
+    const half = Math.floor(weapon.bulletsPerShot / 2);
+    for (let i = 0; i < weapon.bulletsPerShot; i++) {
+        const spreadOffset = weapon.spread > 0
+            ? (i - half) * (weapon.spread / Math.max(weapon.bulletsPerShot - 1, 1))
+            : 0;
+
+        // SMG gets a small random horizontal jitter too
+        const jitterX = weapon.spread > 0 ? (Math.random() - 0.5) * 40 : 0;
+
+        bullets.push({
+            x:           bulletStartX,
+            y:           bulletStartY + spreadOffset,
+            width:       weapon.id === 3 ? 16 : 10,  // sniper bullet is longer
+            height:      weapon.id === 3 ? 4  : 5,
+            speed:       (weapon.bulletSpeed + jitterX) * dir,
+            damage:      weapon.damage,
+            penetration: weapon.penetration,
+            hitEnemies:  [],
+            weaponId:    weapon.id,
+        });
+    }
+
+    player.lastShootTime = currentTime;
+    player.shootCooldown = weapon.cooldown; // keep in sync for animation
+
+    const shootingSoundInstance = new Audio(shootingSoundSrc);
+    shootingSoundInstance.volume = typeof masterVolume !== 'undefined' ? masterVolume : 1;
+    shootingSoundInstance.play();
+
+    if (!weapon.infinite) {
+        weaponAmmo[currentWeapon] = Math.max(0, weaponAmmo[currentWeapon] - 1);
     }
 }
 

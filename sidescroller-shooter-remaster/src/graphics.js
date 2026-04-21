@@ -244,12 +244,26 @@ function drawLevelInfo() {
 }
 
 function drawAmmoType() {
+    const weapon = WEAPONS[currentWeapon];
+    if (!weapon) return;
+
     ctx.font      = '20px Arial';
     ctx.fillStyle = 'white';
-    ctx.fillText(`Ammo Type: ${selectedAmmoType}`,                                     480, 665);
-    ctx.fillText(`Standard Ammo: ${ammoInventory.standard === Infinity ? '∞' : ammoInventory.standard}`, 480, 700);
-    ctx.fillText(`${ammoInventory.highDamage}`,  430, 630);
-    ctx.fillText(`${ammoInventory.penetration}`, 430, 700);
+
+    // Weapon name
+    ctx.fillText(`Weapon: ${weapon.name}`, 480, 665);
+
+    // Ammo count
+    const ammo = weaponAmmo[currentWeapon];
+    const ammoStr = (ammo === Infinity || weapon.infinite) ? '∞' : ammo;
+    ctx.fillText(`Ammo: ${ammoStr}`, 480, 695);
+
+    // Pistol fallback hint when current weapon is out
+    if (!weapon.infinite && weaponAmmo[currentWeapon] <= 0) {
+        ctx.fillStyle = '#ff8888';
+        ctx.font      = '16px Arial';
+        ctx.fillText('Out of ammo!', 480, 718);
+    }
 }
 
 function drawCurrency() {

@@ -39,19 +39,30 @@ window.addEventListener('keydown', (e) => {
         if (e.code === keyBindings.shoot) {
             shootBullet();
         }
-        if (e.code === 'Enter' && enemiesCleared && isPlayerAtStorePosition()) {
-            if (selectedEstablishment && !establishmentUsed) {
-                enterEstablishment();
-            } else {
-                if (devMode) console.log(establishmentUsed ? 'Establishment already used.' : 'No establishment selected.');
+        if (e.code === 'Enter') {
+            if (devMode) console.log(`Enter pressed — enemiesCleared:${enemiesCleared} atStore:${isPlayerAtStorePosition()} selected:${selectedEstablishment} used:${establishmentUsed}`);
+            if (enemiesCleared && isPlayerAtStorePosition()) {
+                if (selectedEstablishment && !establishmentUsed) {
+                    enterEstablishment();
+                } else {
+                    if (devMode) console.log(establishmentUsed ? 'Establishment already used.' : 'No establishment selected.');
+                }
             }
         }
         if (e.code === keyBindings.pause) {
             togglePause();
         }
-        if (e.code === 'Digit1')      { selectedAmmoType = 'standard';    if (devMode) console.log('Switched to standard ammo.'); }
-        else if (e.code === 'Digit2') { selectedAmmoType = 'highDamage';  if (devMode) console.log('Switched to high damage ammo.'); }
-        else if (e.code === 'Digit3') { selectedAmmoType = 'penetration'; if (devMode) console.log('Switched to penetration ammo.'); }
+        // Digit keys switch weapons
+        if (e.code === 'Digit1') {
+            currentWeapon = 'pistol';
+            if (devMode) console.log('Switched to Pistol');
+        } else if (e.code === 'Digit2') {
+            if (weaponAmmo.smg > 0) { currentWeapon = 'smg'; if (devMode) console.log('Switched to SMG'); }
+            else if (devMode) console.log('No SMG ammo');
+        } else if (e.code === 'Digit3') {
+            if (weaponAmmo.sniper > 0) { currentWeapon = 'sniper'; if (devMode) console.log('Switched to Sniper'); }
+            else if (devMode) console.log('No Sniper ammo');
+        }
 
     } else if (currentGameState === gameState.STORE_SCREEN ||
                currentGameState === gameState.ROBBERY_SCREEN) {

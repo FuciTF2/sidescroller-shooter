@@ -85,6 +85,10 @@ function resetGame() {
     enemiesCleared        = false;
     bullets.length        = 0;
     bossBullets.length    = 0;
+    currentWeapon         = 'pistol';
+    weaponAmmo.smg        = 0;
+    weaponAmmo.sniper     = 0;
+    weaponAmmo.devGun     = Infinity;
     enemies               = initializeEnemiesForLevel(currentLevel);
     selectedEstablishment = null;
     establishmentUsed     = false;

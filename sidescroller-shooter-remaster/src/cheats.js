@@ -57,7 +57,20 @@ function processCheatCode(command) {
             if (devMode) console.log(`Dev mode ${devMode ? 'enabled' : 'disabled'}`);
             break;
         default:
-            if (devMode) console.log('Unknown cheat code!');
+            // Check for "weapon <id>" pattern
+            if (command.startsWith('weapon ')) {
+                const id = parseInt(command.slice(7).trim(), 10);
+                const key = WEAPON_BY_ID[id];
+                if (key) {
+                    currentWeapon = key;
+                    weaponAmmo[key] = Infinity; // cheat gives unlimited ammo
+                    if (devMode) console.log(`Weapon set to: ${WEAPONS[key].name} (infinite ammo)`);
+                } else {
+                    if (devMode) console.log(`Unknown weapon ID: ${id}. Valid IDs: ${Object.values(WEAPONS).map(w => w.id).join(', ')}`);
+                }
+            } else {
+                if (devMode) console.log('Unknown cheat code!');
+            }
     }
 }
 

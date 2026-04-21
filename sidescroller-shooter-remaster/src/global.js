@@ -172,6 +172,68 @@ const ammoInventory = {
     penetration: 0,
 };
 
+// --- Weapons ---
+const WEAPONS = {
+    pistol: {
+        id:           0,
+        name:         'Pistol',
+        cooldown:     200,   // ms between shots
+        damage:       15,
+        bulletSpeed:  600,   // px/sec
+        spread:       0,     // vertical spread in px (0 = none)
+        bulletsPerShot: 1,
+        penetration:  false,
+        infinite:     true,
+    },
+    smg: {
+        id:           2,
+        name:         'SMG',
+        cooldown:     80,
+        damage:       8,
+        bulletSpeed:  680,
+        spread:       18,    // bullets fan vertically by this amount
+        bulletsPerShot: 3,
+        penetration:  false,
+        infinite:     false,
+    },
+    sniper: {
+        id:           3,
+        name:         'Sniper',
+        cooldown:     900,
+        damage:       60,
+        bulletSpeed:  1100,
+        spread:       0,
+        bulletsPerShot: 1,
+        penetration:  false,
+        infinite:     false,
+    },
+    devGun: {
+        id:           1997,
+        name:         'Dev Gun',
+        cooldown:     50,
+        damage:       99999,
+        bulletSpeed:  900,
+        spread:       0,
+        bulletsPerShot: 1,
+        penetration:  2,
+        infinite:     true,
+    },
+};
+
+// Map weapon ID → key for cheat code lookup
+const WEAPON_BY_ID = {};
+for (const [key, w] of Object.entries(WEAPONS)) WEAPON_BY_ID[w.id] = key;
+
+let currentWeapon = 'pistol'; // active weapon key
+
+// Weapon ammo counts (Infinity = unlimited)
+const weaponAmmo = {
+    pistol:  Infinity,
+    smg:     0,
+    sniper:  0,
+    devGun:  Infinity, // only via cheat
+};
+
 // --- Store items ---
 const storeItems = {
     highDamageAmmo:  { price: 3, effect: () => { ammoInventory.highDamage  += 5; } },

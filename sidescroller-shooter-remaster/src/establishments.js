@@ -117,8 +117,10 @@ function resetRobbery() {
 }
 
 function isPlayerAtStorePosition() {
-    return player.x < STORE_POSITION.x + STORE_POSITION.width &&
-           player.x + player.width > STORE_POSITION.x &&
-           player.y < STORE_POSITION.y + STORE_POSITION.height &&
-           player.y + player.height > STORE_POSITION.y;
+    const pw = player.width  * player.scale;
+    const ph = player.height * player.scale;
+    return player.x          < STORE_POSITION.x + STORE_POSITION.width  &&
+           player.x + pw     > STORE_POSITION.x                         &&
+           player.y          < STORE_POSITION.y + STORE_POSITION.height &&
+           player.y + ph     > STORE_POSITION.y;
 }

@@ -68,8 +68,11 @@ function updateBullets(delta) {
 
 function drawBullets() {
     bullets.forEach(bullet => {
-        // Penetration ammo glows cyan so the player can see the difference
-        ctx.fillStyle = bullet.penetration ? '#00e5ff' : 'yellow';
+        if (bullet.weaponId === 1997)    ctx.fillStyle = '#ff00ff'; // dev gun — magenta
+        else if (bullet.weaponId === 3)  ctx.fillStyle = '#ffffff'; // sniper — white
+        else if (bullet.weaponId === 2)  ctx.fillStyle = '#ffaa00'; // smg — orange
+        else if (bullet.penetration)     ctx.fillStyle = '#00e5ff'; // penetration ammo — cyan
+        else                             ctx.fillStyle = 'yellow';  // pistol — yellow
         ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
     });
 }
