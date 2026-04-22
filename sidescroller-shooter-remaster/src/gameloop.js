@@ -56,10 +56,16 @@ function triggerLevelChange() {
             currentGameState = gameState.STORY_COMPLETE;
             return;
         }
-        // New location — show transition screen
+        // New location in story — show transition screen + cutscene
         if (isNewLocation(prevLevel, currentLevel)) {
             currentGameState = gameState.LOCATION_TRANSITION;
             return; // enemies will be spawned when player dismisses the transition
+        }
+    } else {
+        // Endless mode — no screens, but log location tier changes
+        if (isNewLocation(prevLevel, currentLevel) && devMode) {
+            const tier = Math.floor((currentLevel - 1) / LEVELS_PER_LOCATION);
+            console.log(`Endless: entering tier ${tier + 1} (level ${currentLevel})`);
         }
     }
 

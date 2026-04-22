@@ -6,12 +6,18 @@
 let enemies = [];
 
 function initializeEnemiesForLevel(level) {
-    if (isBossLevel(level)) {
+    // Bosses only appear in story mode
+    if (isStoryMode && isBossLevel(level)) {
         return [createBoss(level)];
     }
 
-    const maxEnemies = 5;
+    // Scale difficulty by location tier (every 5 levels = one tier)
+    const tier           = Math.floor((level - 1) / LEVELS_PER_LOCATION); // 0, 1, 2, ...
+    const maxEnemies     = Math.min(2 + tier, 8);         // 2 at tier 0, grows to 8
     const numberOfEnemies = Math.min(level, maxEnemies);
+    const enemyHealth    = 50 + tier * 15;                // 50, 65, 80, 95, 110, 125...
+    const enemySpeedBase = 168 + tier * 12;               // gets slightly faster each tier
+
     const result = [];
     const enemyScale             = 1.5;
     const enemyMinYLocal         = 200;
@@ -27,7 +33,7 @@ function initializeEnemiesForLevel(level) {
         result.push({
             x:              enemyX,
             y:              enemyY,
-            dx:             -168,
+            dx:             -enemySpeedBase,
             dy:             0,
             animationTimer: 0,
             animationSpeed: 25,
@@ -36,12 +42,12 @@ function initializeEnemiesForLevel(level) {
             frameHeight:    150,
             totalFrames:    10,
             idleFrame:      0,
-            speed:          168,
+            speed:          enemySpeedBase,
             facingLeft:     true,
             width:          enemyWidth,
             height:         enemyHeight,
-            health:         50,
-            maxHealth:      50,
+            health:         enemyHealth,
+            maxHealth:      enemyHealth,
             image:          images.enemy,
             scale:          enemyScale,
             lastAttackTime: 0,

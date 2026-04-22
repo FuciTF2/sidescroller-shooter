@@ -401,17 +401,21 @@ function drawStoryCompleteScreen() {
 }
 
 function drawLocationIndicator() {
-    // Small location label in the top-right during story mode play
-    if (!isStoryMode) return;
-    const loc = getCurrentLocation();
-    if (!loc) return;
-
     ctx.save();
     ctx.textAlign    = 'right';
     ctx.textBaseline = 'middle';
     ctx.font         = 'bold 16px Arial';
     ctx.fillStyle    = 'rgba(255,255,255,0.7)';
-    ctx.fillText(`${loc.name}  •  Level ${currentLevel}`, canvas.width - 20, 55);
+
+    if (isStoryMode) {
+        const loc = getCurrentLocation();
+        if (loc) ctx.fillText(`${loc.name}  •  Level ${currentLevel}`, canvas.width - 20, 55);
+    } else {
+        // Endless mode — show tier
+        const tier = Math.floor((currentLevel - 1) / LEVELS_PER_LOCATION) + 1;
+        ctx.fillText(`Zone ${tier}  •  Level ${currentLevel}`, canvas.width - 20, 55);
+    }
+
     ctx.restore();
 }
 
