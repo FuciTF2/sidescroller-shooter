@@ -286,8 +286,158 @@ function drawControlsScreen() {
 
 function drawStoreScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(storeImg, 0, 0, canvas.width, canvas.height);
-    ctx.font = '20px Arial';
+
+    // Background — same dark style as weapon store
+    ctx.fillStyle = '#0d100d';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Subtle grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < canvas.width; x += 60) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += 60) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+
+    // Title
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = 'bold 40px Arial';
+    ctx.fillStyle    = '#80c864';
+    ctx.shadowColor  = 'rgba(128,200,100,0.4)';
+    ctx.shadowBlur   = 16;
+    ctx.fillText('General Store', canvas.width / 2, 70);
+    ctx.shadowBlur   = 0;
+
+    ctx.font      = '18px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText(`Wallet: ${playerCurrency} $`, canvas.width / 2, 108);
+
+    // --- Two item cards ---
+    const cardW = 380, cardH = 300;
+    const gap   = 40;
+    const totalW = cardW * 2 + gap;
+    const startX = canvas.width / 2 - totalW / 2;
+    const cardY  = 160;
+
+    // === Card 1: Ammo restock ===
+    const restock   = STORE_AMMO_RESTOCK[currentWeapon];
+    const weapon    = WEAPONS[currentWeapon];
+    const hasAmmo   = restock && restock.amount > 0;
+    const canAffordAmmo = hasAmmo && playerCurrency >= restock.price;
+
+drawStoreCard(startX, cardY, cardW, cardH, {
+    keyHint:  '[1]',
+    title:    hasAmmo ? `${weapon.name} Ammo` : 'Ammo',
+    subtitle: hasAmmo ? `+${restock.amount} rounds` : 'No ammo to sell for this weapon',
+    detail:   hasAmmo ? `Current: ${weaponAmmo[currentWeapon] === Infinity ? '∞' : weaponAmmo[currentWeapon]}` : '',
+    price:    hasAmmo ? restock.price : null,
+    canAfford: canAffordAmmo,
+    icon:     '🔸',
+});
+
+    // === Card 2: Soda ===
+    const canAffordSoda = playerCurrency >= SODA.price;
+    const healthFull    = player.health >= player.maxHealth;
+
+    drawStoreCard(startX + cardW + gap, cardY, cardW, cardH, {
+        keyHint:  '[2]',
+        title:    'Soda',
+        subtitle: `Restores ${SODA.heal} HP`,
+        detail:   `Health: ${Math.round(player.health)} / ${player.maxHealth}`,
+        price:    SODA.price,
+        canAfford: canAffordSoda && !healthFull,
+        disabled:  healthFull,
+        disabledMsg: 'Already full',
+        icon:     '🥤',
+    });
+
+    // Exit hint
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = '16px Arial';
+    ctx.fillStyle    = 'rgba(255,255,255,0.35)';
+    ctx.fillText('Press [B] to leave', canvas.width / 2, canvas.height - 36);
+
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.shadowBlur   = 0;
+}
+
+function drawStoreCard(x, y, w, h, opts) {
+    const { keyHint, title, subtitle, detail, price, canAfford, disabled, disabledMsg, icon } = opts;
+
+    // Background
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    drawWSRoundRect(x, y, w, h, 14);
+    ctx.fill();
+
+    // Border
+    ctx.strokeStyle = canAfford ? 'rgba(128,200,100,0.5)' : 'rgba(255,255,255,0.1)';
+    ctx.lineWidth   = 1.5;
+    drawWSRoundRect(x, y, w, h, 14);
+    ctx.stroke();
+
+    // Key hint badge
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    drawWSRoundRect(x + 14, y + 14, 40, 28, 6);
+    ctx.fill();
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = 'bold 14px Arial';
+    ctx.fillStyle    = 'rgba(255,255,255,0.6)';
+    ctx.fillText(keyHint, x + 34, y + 28);
+
+    // Icon
+    ctx.font      = '40px Arial';
+    ctx.fillText(icon, x + w / 2, y + 80);
+
+    // Title
+    ctx.font      = 'bold 26px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(title, x + w / 2, y + 130);
+
+// Subtitle (support multi-line)
+ctx.font      = '18px Arial';
+ctx.fillStyle = 'rgba(255,255,255,0.65)';
+subtitle.split('\n').forEach((line, i) => {
+        ctx.fillText(line, x + w / 2, y + 162 + i * 26);
+    });
+
+    // Detail line
+    if (detail) {
+        ctx.font      = '15px Arial';
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
+        ctx.fillText(detail, x + w / 2, y + 210);
+    }
+
+    // Buy button
+    const btnX = x + 24, btnY = y + h - 66, btnW = w - 48, btnH = 44;
+
+    if (disabled) {
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
+        ctx.font      = '16px Arial';
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.fillText(disabledMsg || 'Unavailable', btnX + btnW / 2, btnY + btnH / 2);
+    } else if (price === null) {
+        ctx.fillStyle = 'rgba(255,255,255,0.05)';
+        drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
+        ctx.font      = '16px Arial';
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.fillText('Not available', btnX + btnW / 2, btnY + btnH / 2);
+    } else {
+        ctx.fillStyle = canAfford ? 'rgba(128,200,100,0.2)' : 'rgba(255,255,255,0.05)';
+        drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
+        ctx.strokeStyle = canAfford ? 'rgba(128,200,100,0.7)' : 'rgba(255,255,255,0.1)';
+        ctx.lineWidth   = 1.5;
+        drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.stroke();
+        ctx.font      = 'bold 16px Arial';
+        ctx.fillStyle = canAfford ? '#80c864' : 'rgba(255,255,255,0.2)';
+        ctx.fillText(`Buy — ${price} $`, btnX + btnW / 2, btnY + btnH / 2);
+    }
 }
 
 function drawRestaurantScreen() {

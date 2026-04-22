@@ -250,10 +250,16 @@ const weaponAmmo = {
 };
 
 // --- Store items ---
-const storeItems = {
-    highDamageAmmo:  { price: 3, effect: () => { ammoInventory.highDamage  += 5; } },
-    penetrationAmmo: { price: 5, effect: () => { ammoInventory.penetration += 5; } },
+// Ammo restock — price and amount depend on the player's current weapon
+const STORE_AMMO_RESTOCK = {
+    smg:    { amount: 30, price: 15 },
+    sniper: { amount: 10, price: 20 },
+    devGun: { amount: 0,  price: 0  }, // dev gun is infinite, nothing to sell
+    pistol: { amount: 0,  price: 0  }, // pistol is infinite, nothing to sell
 };
+
+// Soda heal item
+const SODA = { name: 'Soda', heal: 25, price: 15 };
 
 // --- Meals ---
 const meals = {

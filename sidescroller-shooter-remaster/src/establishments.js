@@ -37,9 +37,9 @@ function enterEstablishment() {
 
 function handleEstablishmentInput(keyCode) {
     if (currentGameState === gameState.STORE_SCREEN) {
-        if (keyCode === 'Digit1')      purchaseItem('highDamageAmmo');
-        else if (keyCode === 'Digit2') purchaseItem('penetrationAmmo');
-        else if (keyCode === keyBindings.exitEstablishment)   currentGameState = gameState.PLAYING;
+        if (keyCode === 'Digit1')      buyStoreAmmo();
+        else if (keyCode === 'Digit2') buySoda();
+        else if (keyCode === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
     } else if (currentGameState === gameState.RESTAURANT_SCREEN) {
         if (keyCode === 'Digit1')      purchaseMeal(meals.RED_FISH);
         else if (keyCode === 'Digit2') purchaseMeal(meals.BEEF_SOUP);
@@ -57,27 +57,35 @@ function handleEstablishmentInput(keyCode) {
     }
 }
 
-function purchaseItem(itemKey) {
-    const item = storeItems[itemKey];
-    if (playerCurrency >= item.price) {
-        playerCurrency -= item.price;
-        item.effect();
-        if (devMode) console.log(`Purchased ${itemKey}. Current currency: ${playerCurrency}`);
-    } else {
-        if (devMode) console.log(`Not enough currency to buy ${itemKey}. Current currency: ${playerCurrency}`);
+function buyStoreAmmo() {
+    const restock = STORE_AMMO_RESTOCK[currentWeapon];
+    if (!restock || restock.amount === 0) {
+        if (devMode) console.log(`No ammo to sell for ${currentWeapon}`);
+        return;
     }
+    if (playerCurrency < restock.price) {
+        if (devMode) console.log(`Not enough currency for ammo — need ${restock.price}, have ${playerCurrency}`);
+        return;
+    }
+    playerCurrency        -= restock.price;
+    weaponAmmo[currentWeapon] = (weaponAmmo[currentWeapon] === Infinity)
+        ? Infinity
+        : weaponAmmo[currentWeapon] + restock.amount;
+    if (devMode) console.log(`Bought ${restock.amount} ${currentWeapon} ammo. Total: ${weaponAmmo[currentWeapon]}`);
 }
 
-function purchaseAmmo(type, amount) {
-    const ammo     = ammoTypes[type];
-    const totalCost = ammo.cost * amount;
-    if (playerCurrency >= totalCost) {
-        playerCurrency -= totalCost;
-        ammoInventory[type] += amount;
-        if (devMode) console.log(`Purchased ${amount} ${type} ammo for ${totalCost} currency.`);
-    } else {
-        if (devMode) console.log('Not enough currency to purchase ammo.');
+function buySoda() {
+    if (player.health >= player.maxHealth) {
+        if (devMode) console.log('Already at full health');
+        return;
     }
+    if (playerCurrency < SODA.price) {
+        if (devMode) console.log(`Not enough currency for soda — need ${SODA.price}, have ${playerCurrency}`);
+        return;
+    }
+    playerCurrency  -= SODA.price;
+    player.health    = Math.min(player.health + SODA.heal, player.maxHealth);
+    if (devMode) console.log(`Drank soda. Health: ${player.health}. Currency: ${playerCurrency}`);
 }
 
 function purchaseMeal(meal) {
