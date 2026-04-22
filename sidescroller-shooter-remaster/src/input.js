@@ -64,6 +64,9 @@ window.addEventListener('keydown', (e) => {
             else if (devMode) console.log('No Sniper ammo');
         }
 
+    } else if (currentGameState === gameState.WEAPON_STORE_SCREEN) {
+        handleEstablishmentInput(e.code);
+
     } else if (currentGameState === gameState.STORE_SCREEN ||
                currentGameState === gameState.ROBBERY_SCREEN) {
         if (e.code === keyBindings.exitEstablishment) {

@@ -27,6 +27,9 @@ function enterEstablishment() {
     } else if (selectedEstablishment === ESTABLISHMENTS.ROBBERY) {
         currentGameState = gameState.ROBBERY_SCREEN;
         if (devMode) console.log('Entering robbery screen');
+    } else if (selectedEstablishment === ESTABLISHMENTS.WEAPON_STORE) {
+        currentGameState = gameState.WEAPON_STORE_SCREEN;
+        if (devMode) console.log('Entering weapon store');
     } else {
         if (devMode) console.log('Error: Invalid establishment selected.');
     }
@@ -44,6 +47,12 @@ function handleEstablishmentInput(keyCode) {
         else if (keyCode === keyBindings.exitEstablishment)   currentGameState = gameState.PLAYING;
     } else if (currentGameState === gameState.ROBBERY_SCREEN) {
         if (keyCode === 'Digit1')    robEstablishment();
+        else if (keyCode === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
+    } else if (currentGameState === gameState.WEAPON_STORE_SCREEN) {
+        if      (keyCode === 'Digit1') purchaseWeapon('pistol');
+        else if (keyCode === 'Digit2') purchaseWeapon('smg');
+        else if (keyCode === 'Digit3') purchaseWeapon('sniper');
+        else if (keyCode === 'Digit4') purchaseWeapon('devGun');
         else if (keyCode === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
     }
 }
@@ -114,6 +123,41 @@ function resetRobbery() {
     robberyAttempted   = false;
     establishmentUsed  = true;  // robbery is done — player cannot re-enter
     currentGameState   = gameState.PLAYING;
+}
+
+function purchaseWeapon(key) {
+    const w = WEAPONS[key];
+    if (!w) return;
+
+    // Pistol is free / always owned
+    if (key === 'pistol') {
+        currentWeapon = 'pistol';
+        if (devMode) console.log('Switched to Pistol (free)');
+        return;
+    }
+
+    // Already owns infinite ammo for this weapon
+    if (weaponAmmo[key] === Infinity) {
+        currentWeapon = key;
+        if (devMode) console.log(`Switched to ${w.name} (already owned)`);
+        return;
+    }
+
+    const price = WEAPON_PRICES[key];
+    if (price === undefined) {
+        if (devMode) console.log(`${w.name} is not for sale`);
+        return;
+    }
+
+    if (playerCurrency < price) {
+        if (devMode) console.log(`Not enough currency for ${w.name} — need ${price}, have ${playerCurrency}`);
+        return;
+    }
+
+    playerCurrency -= price;
+    weaponAmmo[key] = w.infinite ? Infinity : (WEAPON_AMMO_BUNDLES[key]?.amount ?? 20);
+    currentWeapon   = key;
+    if (devMode) console.log(`Purchased ${w.name} for ${price}$. Ammo: ${weaponAmmo[key]}`);
 }
 
 function isPlayerAtStorePosition() {

@@ -298,6 +298,177 @@ function drawRestaurantScreen() {
     ctx.fillText(`Wallet: ${playerCurrency}$`, 40, 550);
 }
 
+function drawWeaponStoreScreen() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Background
+    ctx.fillStyle = '#0d0d12';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Subtle grid lines
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < canvas.width; x += 60) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += 60) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+
+    // Title
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = 'bold 40px Arial';
+    ctx.fillStyle    = '#e8c84a';
+    ctx.shadowColor  = 'rgba(232,200,74,0.4)';
+    ctx.shadowBlur   = 16;
+    ctx.fillText('Weapon Shop', canvas.width / 2, 70);
+    ctx.shadowBlur   = 0;
+
+    ctx.font      = '18px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText(`Wallet: ${playerCurrency} $`, canvas.width / 2, 108);
+
+    // Weapon cards
+    const weaponKeys = ['pistol', 'smg', 'sniper', 'devGun'];
+    const cardW = 320, cardH = 340;
+    const totalW = weaponKeys.length * cardW + (weaponKeys.length - 1) * 24;
+    const startX = canvas.width / 2 - totalW / 2;
+    const cardY  = 160;
+
+    weaponKeys.forEach((key, i) => {
+        const w       = WEAPONS[key];
+        const price   = WEAPON_PRICES[key];
+        const owned   = weaponAmmo[key] === Infinity || (key === 'pistol');
+        const active  = currentWeapon === key;
+        const canAfford = price !== undefined && playerCurrency >= price;
+        const x = startX + i * (cardW + 24);
+
+        // Card background
+        ctx.fillStyle = active
+            ? 'rgba(232,200,74,0.12)'
+            : owned ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.04)';
+        drawWSRoundRect(x, cardY, cardW, cardH, 14);
+        ctx.fill();
+
+        // Card border
+        ctx.strokeStyle = active ? '#e8c84a'
+            : owned ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = active ? 2 : 1.5;
+        drawWSRoundRect(x, cardY, cardW, cardH, 14);
+        ctx.stroke();
+
+        // Key hint badge
+        const keyLabel = i + 1;
+        ctx.fillStyle  = 'rgba(255,255,255,0.15)';
+        drawWSRoundRect(x + 14, cardY + 14, 32, 28, 6);
+        ctx.fill();
+        ctx.textAlign    = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font         = 'bold 14px Arial';
+        ctx.fillStyle    = 'rgba(255,255,255,0.6)';
+        ctx.fillText(`[${keyLabel}]`, x + 30, cardY + 28);
+
+        // Weapon name
+        ctx.font      = 'bold 26px Arial';
+        ctx.fillStyle = active ? '#e8c84a' : '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.fillText(w.name, x + cardW / 2, cardY + 68);
+
+        // Stats block
+        const stats = [
+            { label: 'Damage',    value: w.damage >= 99999 ? '∞' : w.damage },
+            { label: 'Fire Rate', value: w.cooldown <= 80 ? 'Fast' : w.cooldown <= 300 ? 'Medium' : 'Slow' },
+            { label: 'Ammo',      value: w.infinite ? '∞' : (weaponAmmo[key] > 0 ? weaponAmmo[key] : '0') },
+            { label: 'Spread',    value: w.spread > 0 ? 'Yes' : 'No' },
+        ];
+
+        ctx.font         = '16px Arial';
+        ctx.textAlign    = 'left';
+        ctx.textBaseline = 'middle';
+        stats.forEach((s, si) => {
+            const sy = cardY + 110 + si * 38;
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fillText(s.label, x + 24, sy);
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'right';
+            ctx.fillText(s.value, x + cardW - 24, sy);
+            ctx.textAlign = 'left';
+
+            // Divider
+            ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x + 16, sy + 18);
+            ctx.lineTo(x + cardW - 16, sy + 18);
+            ctx.stroke();
+        });
+
+        // Buy / status button at card bottom
+        const btnY = cardY + cardH - 66;
+        const btnX = x + 20;
+        const btnW = cardW - 40;
+        const btnH = 44;
+
+        if (key === 'pistol') {
+            ctx.fillStyle = 'rgba(255,255,255,0.08)';
+            drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
+            ctx.textAlign    = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font         = '16px Arial';
+            ctx.fillStyle    = 'rgba(255,255,255,0.4)';
+            ctx.fillText('Starter weapon', btnX + btnW / 2, btnY + btnH / 2);
+        } else if (owned) {
+            ctx.fillStyle = 'rgba(80,200,100,0.15)';
+            drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
+            ctx.strokeStyle = 'rgba(80,200,100,0.5)';
+            ctx.lineWidth   = 1.5;
+            drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.stroke();
+            ctx.textAlign    = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font         = 'bold 16px Arial';
+            ctx.fillStyle    = '#80c864';
+            ctx.fillText('✓ Owned', btnX + btnW / 2, btnY + btnH / 2);
+        } else {
+            ctx.fillStyle = canAfford ? 'rgba(232,200,74,0.2)' : 'rgba(255,255,255,0.05)';
+            drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.fill();
+            ctx.strokeStyle = canAfford ? 'rgba(232,200,74,0.7)' : 'rgba(255,255,255,0.1)';
+            ctx.lineWidth   = 1.5;
+            drawWSRoundRect(btnX, btnY, btnW, btnH, 8); ctx.stroke();
+            ctx.textAlign    = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font         = 'bold 16px Arial';
+            ctx.fillStyle    = canAfford ? '#e8c84a' : 'rgba(255,255,255,0.25)';
+            ctx.fillText(`Buy — ${price} $`, btnX + btnW / 2, btnY + btnH / 2);
+        }
+    });
+
+    // Exit hint
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = '16px Arial';
+    ctx.fillStyle    = 'rgba(255,255,255,0.35)';
+    ctx.fillText(`Press [B] to leave`, canvas.width / 2, canvas.height - 36);
+
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.shadowBlur   = 0;
+}
+
+function drawWSRoundRect(x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+}
+
 function drawRobberyScreen() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(robberyScreenImg, 0, 0, canvas.width, canvas.height);

@@ -24,7 +24,8 @@ const gameState = {
     OPTIONS:          'options',
     STORY:            'story',
     LOCATION_TRANSITION: 'locationTransition',
-    STORY_COMPLETE:   'storyComplete',
+    STORY_COMPLETE:     'storyComplete',
+    WEAPON_STORE_SCREEN: 'weaponStoreScreen',
     DIALOG:           'dialog',
     WALKING_IN:       'walkingIn',
 };
@@ -149,9 +150,10 @@ let backgroundX = 0;
 
 // --- Establishments ---
 const ESTABLISHMENTS = {
-    STORE:      'store',
-    RESTAURANT: 'restaurant',
-    ROBBERY:    'robbery'
+    STORE:        'store',
+    RESTAURANT:   'restaurant',
+    ROBBERY:      'robbery',
+    WEAPON_STORE: 'weaponStore'
 };
 
 let currentEstablishment     = null;
@@ -220,6 +222,19 @@ const WEAPONS = {
     },
 };
 
+// Weapon store prices (pistol is free / starter, not sold)
+const WEAPON_PRICES = {
+    smg:    80,
+    sniper: 120,
+    devGun: 9999, // placeholder
+};
+
+// Weapon store ammo bundle sizes (bought alongside or separately)
+const WEAPON_AMMO_BUNDLES = {
+    smg:    { amount: 30, price: 20 },
+    sniper: { amount: 10, price: 25 },
+};
+
 // Map weapon ID → key for cheat code lookup
 const WEAPON_BY_ID = {};
 for (const [key, w] of Object.entries(WEAPONS)) WEAPON_BY_ID[w.id] = key;
@@ -270,7 +285,7 @@ const BOSS_BULLET_SPEED   = 420;  // px/sec
 
 // --- HUD / world positions ---
 const MARK_POSITION = { x: 825, y: 60,  width: 40,  height: 50  };
-const STORE_POSITION = { x: 750, y: 120, width: 170, height: 160 }; // entry zone — matches HUD building area
+const STORE_POSITION = { x: 750, y: 120, width: 300, height: 160 }; // entry zone — matches HUD building area
 
 let arrowY        = MARK_POSITION.y;
 let arrowDirection = 1;

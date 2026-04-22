@@ -183,6 +183,9 @@ function gameLoop(timestamp) {
         drawLevelInfo();
         drawPauseMenu();
 
+    } else if (currentGameState === gameState.WEAPON_STORE_SCREEN) {
+        drawWeaponStoreScreen();
+
     } else if (currentGameState === gameState.STORE_SCREEN) {
         drawStoreScreen();
         ctx.drawImage(images.hud, 0, 120);

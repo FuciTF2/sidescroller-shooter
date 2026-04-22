@@ -68,6 +68,27 @@ function processCheatCode(command) {
                 } else {
                     if (devMode) console.log(`Unknown weapon ID: ${id}. Valid IDs: ${Object.values(WEAPONS).map(w => w.id).join(', ')}`);
                 }
+            } else if (command.startsWith('establishment ')) {
+                const name = command.slice(14).trim();
+                // Map short names to establishment keys
+                const aliases = {
+                    store:        ESTABLISHMENTS.STORE,
+                    restaurant:   ESTABLISHMENTS.RESTAURANT,
+                    robbery:      ESTABLISHMENTS.ROBBERY,
+                    weaponstore:  ESTABLISHMENTS.WEAPON_STORE,
+                    weapons:      ESTABLISHMENTS.WEAPON_STORE,
+                    weapon:       ESTABLISHMENTS.WEAPON_STORE,
+                };
+                const target = aliases[name.replace(/\s+/g, '')];
+                if (target) {
+                    selectedEstablishment = target;
+                    establishmentUsed     = false;
+                    enemiesCleared        = true;
+                    enterEstablishment();
+                    if (devMode) console.log(`Forced establishment: ${target}`);
+                } else {
+                    if (devMode) console.log(`Unknown establishment "${name}". Valid: store, restaurant, robbery, weaponstore`);
+                }
             } else {
                 if (devMode) console.log('Unknown cheat code!');
             }
