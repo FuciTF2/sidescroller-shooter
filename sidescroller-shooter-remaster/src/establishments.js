@@ -35,25 +35,31 @@ function enterEstablishment() {
     }
 }
 
+function exitEstablishment() {
+    establishmentUsed    = true;
+    currentGameState     = gameState.PLAYING;
+    if (devMode) console.log('Left establishment — establishmentUsed = true');
+}
+
 function handleEstablishmentInput(keyCode) {
     if (currentGameState === gameState.STORE_SCREEN) {
         if (keyCode === 'Digit1')      buyStoreAmmo();
         else if (keyCode === 'Digit2') buySoda();
-        else if (keyCode === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
+        else if (keyCode === keyBindings.exitEstablishment) exitEstablishment();
     } else if (currentGameState === gameState.RESTAURANT_SCREEN) {
         if (keyCode === 'Digit1')      purchaseMeal(meals.RED_FISH);
         else if (keyCode === 'Digit2') purchaseMeal(meals.BEEF_SOUP);
         else if (keyCode === 'Digit3') purchaseMeal(meals.FRIED_PIRANHA);
-        else if (keyCode === keyBindings.exitEstablishment)   currentGameState = gameState.PLAYING;
+        else if (keyCode === keyBindings.exitEstablishment) exitEstablishment();
     } else if (currentGameState === gameState.ROBBERY_SCREEN) {
         if (keyCode === 'Digit1')    robEstablishment();
-        else if (keyCode === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
+        else if (keyCode === keyBindings.exitEstablishment) exitEstablishment();
     } else if (currentGameState === gameState.WEAPON_STORE_SCREEN) {
         if      (keyCode === 'Digit1') purchaseWeapon('pistol');
         else if (keyCode === 'Digit2') purchaseWeapon('smg');
         else if (keyCode === 'Digit3') purchaseWeapon('sniper');
         else if (keyCode === 'Digit4') purchaseWeapon('devGun');
-        else if (keyCode === keyBindings.exitEstablishment) currentGameState = gameState.PLAYING;
+        else if (keyCode === keyBindings.exitEstablishment) exitEstablishment();
     }
 }
 

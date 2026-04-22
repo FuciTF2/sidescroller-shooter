@@ -136,8 +136,16 @@ function moveTowardPlayer(enemy, delta) {
         const scaledEnemyAttackRange = baseEnemyAttackRange * player.scale;
 
         if (magnitude > scaledEnemyAttackRange) {
-            enemy.dx = (directionX / magnitude) * enemy.speed;
-            enemy.dy = (directionY / magnitude) * enemy.speed;
+            // Proximity slow: full speed beyond SLOW_RADIUS, tapers to MIN_SPEED_FACTOR at contact
+            const SLOW_RADIUS       = 200;
+            const MIN_SPEED_FACTOR  = 0.35;
+            const proximityFactor   = magnitude >= SLOW_RADIUS
+                ? 1
+                : MIN_SPEED_FACTOR + (1 - MIN_SPEED_FACTOR) * (magnitude / SLOW_RADIUS);
+
+            const effectiveSpeed = enemy.speed * proximityFactor;
+            enemy.dx = (directionX / magnitude) * effectiveSpeed;
+            enemy.dy = (directionY / magnitude) * effectiveSpeed;
         } else {
             enemy.dx = 0;
             enemy.dy = 0;

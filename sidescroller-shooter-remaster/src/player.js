@@ -91,6 +91,8 @@ function updatePlayer(delta) {
     const minY = 200;
     const maxY = 440;
     // Check right-edge level trigger BEFORE clamping so it can actually be reached
+    // Only trigger if establishment has been used (or there isn't one) — 
+    // don't advance the level while the establishment is still available
     if (enemiesCleared && player.x + playerWidth >= canvas.width) {
         if (devMode) console.log('Player reached the right edge, proceeding to next level');
         triggerLevelChange();
@@ -179,13 +181,18 @@ function handlePlayerDamage(player, enemies, timestamp) {
     const scaledEnemyAttackRange = baseEnemyAttackRange * player.scale;
 
     enemies.forEach(enemy => {
-        // enemy.drawnW/drawnH set by drawEnemy each frame — use for accurate range
-        const attackRange = (enemy.drawnW || enemy.width * enemy.scale) / 2 + scaledEnemyAttackRange;
+        const ew = enemy.drawnW || enemy.width  * enemy.scale;
+        const eh = enemy.drawnH || enemy.height * enemy.scale;
 
-        // enemy.x/y is the sprite centre
-        const distance = distanceBetween(playerCX, playerCY, enemy.x, enemy.y);
+        // Horizontal: enemy must be within attack range on the X axis
+        const hDist = Math.abs(enemy.x - playerCX);
+        const hRange = ew / 2 + scaledEnemyAttackRange;
 
-        if (distance <= attackRange) {
+        // Vertical: enemy must be roughly at the same Y level (within one sprite height)
+        const vDist  = Math.abs(enemy.y - playerCY);
+        const vRange = Math.max(eh, player.height * player.scale);
+
+        if (hDist <= hRange && vDist <= vRange) {
             if (timestamp - player.lastDamageTime > player.damageInterval) {
                 player.health -= 10;
                 player.lastDamageTime = timestamp;
