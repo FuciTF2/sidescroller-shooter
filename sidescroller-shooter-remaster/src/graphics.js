@@ -328,15 +328,15 @@ function drawStoreScreen() {
     const hasAmmo   = restock && restock.amount > 0;
     const canAffordAmmo = hasAmmo && playerCurrency >= restock.price;
 
-drawStoreCard(startX, cardY, cardW, cardH, {
-    keyHint:  '[1]',
-    title:    hasAmmo ? `${weapon.name} Ammo` : 'Ammo',
-    subtitle: hasAmmo ? `+${restock.amount} rounds` : 'No ammo to sell for this weapon',
-    detail:   hasAmmo ? `Current: ${weaponAmmo[currentWeapon] === Infinity ? '∞' : weaponAmmo[currentWeapon]}` : '',
-    price:    hasAmmo ? restock.price : null,
-    canAfford: canAffordAmmo,
-    icon:     '🔸',
-});
+    drawStoreCard(startX, cardY, cardW, cardH, {
+        keyHint:  '[1]',
+title:    hasAmmo ? `${weapon.name} Ammo` : 'Ammo',
+subtitle: hasAmmo ? `+${restock.amount} rounds` : 'No ammo to sell\nfor this weapon',
+detail:   hasAmmo ? `Current: ${weaponAmmo[currentWeapon] === Infinity ? '∞' : weaponAmmo[currentWeapon]}` : '',
+        price:    hasAmmo ? restock.price : null,
+        canAfford: canAffordAmmo,
+        icon:     '🔸',
+    });
 
     // === Card 2: Soda ===
     const canAffordSoda = playerCurrency >= SODA.price;
@@ -399,12 +399,12 @@ function drawStoreCard(x, y, w, h, opts) {
     ctx.fillStyle = '#ffffff';
     ctx.fillText(title, x + w / 2, y + 130);
 
-// Subtitle (support multi-line)
+// Subtitle (support \n)
 ctx.font      = '18px Arial';
 ctx.fillStyle = 'rgba(255,255,255,0.65)';
 subtitle.split('\n').forEach((line, i) => {
-        ctx.fillText(line, x + w / 2, y + 162 + i * 26);
-    });
+    ctx.fillText(line, x + w / 2, y + 162 + i * 26);
+});
 
     // Detail line
     if (detail) {
@@ -741,13 +741,78 @@ function drawLocationIndicator() {
 }
 
 function drawGameOverScreen() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle  = 'black';
+    // Dim the frozen game world behind the panel
+    ctx.fillStyle = 'rgba(0,0,0,0.72)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle  = 'white';
-    ctx.font       = '48px sans-serif';
-    ctx.textAlign  = 'center';
-    ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 50);
-    ctx.font = '24px sans-serif';
-    ctx.fillText('Press R to Restart', canvas.width / 2, canvas.height / 2);
+
+    // Central panel
+    const panelW = 520;
+    const panelH = 380;
+    const panelX = canvas.width  / 2 - panelW / 2;
+    const panelY = canvas.height / 2 - panelH / 2;
+
+    ctx.fillStyle = 'rgba(10,8,8,0.95)';
+    drawWSRoundRect(panelX, panelY, panelW, panelH, 18);
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(200,60,60,0.6)';
+    ctx.lineWidth   = 2;
+    drawWSRoundRect(panelX, panelY, panelW, panelH, 18);
+    ctx.stroke();
+
+    const cx = canvas.width / 2;
+
+    // "Game Over" title
+    ctx.textAlign    = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.font         = 'bold 58px Arial';
+    ctx.fillStyle    = '#cc3333';
+    ctx.shadowColor  = 'rgba(200,50,50,0.5)';
+    ctx.shadowBlur   = 20;
+    ctx.fillText('Game Over', cx, panelY + 78);
+    ctx.shadowBlur   = 0;
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(panelX + 40, panelY + 120);
+    ctx.lineTo(panelX + panelW - 40, panelY + 120);
+    ctx.stroke();
+
+    // Stats
+    ctx.font      = '20px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText('Level reached', cx, panelY + 158);
+    ctx.font      = 'bold 36px Arial';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(gameOverStats.level, cx, panelY + 196);
+
+    ctx.font      = '20px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText('Currency earned', cx, panelY + 238);
+    ctx.font      = 'bold 28px Arial';
+    ctx.fillStyle = '#e8c84a';
+    ctx.fillText(`${gameOverStats.currency} $`, cx, panelY + 272);
+
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth   = 1;
+    ctx.beginPath();
+    ctx.moveTo(panelX + 40, panelY + 300);
+    ctx.lineTo(panelX + panelW - 40, panelY + 300);
+    ctx.stroke();
+
+    // Key hints
+    ctx.font      = '18px Arial';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('[R]  Play Again', cx - 90, panelY + 340);
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillText('|', cx, panelY + 340);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('[M]  Main Menu', cx + 90, panelY + 340);
+
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.shadowBlur   = 0;
 }

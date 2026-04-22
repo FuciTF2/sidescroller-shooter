@@ -183,8 +183,7 @@ function updateEnemies(delta) {
                 enemy.lastAttackTime = currentTime;
 
                 if (player.health <= 0) {
-                    alert('Game Over!');
-                    resetGame();
+                    triggerGameOver();
                 }
             }
         }

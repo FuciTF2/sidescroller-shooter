@@ -204,7 +204,13 @@ function handlePlayerDamage(player, enemies, timestamp) {
 
 function checkGameOver() {
     if (player.health <= 0) {
-        alert('Game Over! Restarting the game...');
-        resetGame();
+        triggerGameOver();
     }
+}
+
+function triggerGameOver() {
+    // Snapshot stats before resetting anything
+    gameOverStats.level    = currentLevel;
+    gameOverStats.currency = playerCurrency;
+    currentGameState       = gameState.GAME_OVER;
 }

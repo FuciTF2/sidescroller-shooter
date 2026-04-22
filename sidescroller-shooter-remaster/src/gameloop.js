@@ -222,6 +222,13 @@ function gameLoop(timestamp) {
         drawAmmoType();
 
     } else if (currentGameState === gameState.GAME_OVER) {
+        // Frozen game world as backdrop
+        drawBackground();
+        enemies.forEach(enemy => { drawEnemy(enemy); drawEnemyHealthBar(enemy); });
+        ctx.drawImage(images.hud, 0, 120);
+        drawPlayer();
+        drawBullets();
+        drawBossBullets();
         drawGameOverScreen();
 
     } else if (currentGameState === gameState.LOCATION_TRANSITION) {

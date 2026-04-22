@@ -21,9 +21,10 @@ window.addEventListener('keydown', (e) => {
         }
     }
 
-    // --- Restart (R key, global) ---
-    if (e.key === 'r' || e.key === 'R') {
-        restartGame();
+    // --- Restart (R key — only in game over) ---
+    if (currentGameState === gameState.GAME_OVER) {
+        if (e.code === 'KeyR') { resetGame(); return; }
+        if (e.code === 'KeyM') { resetGame(); currentGameState = gameState.MAIN_MENU; return; }
     }
 
     if (currentGameState === gameState.MAIN_MENU) {

@@ -48,6 +48,9 @@ const keyBindings = {
 // Tracks where the Options screen should return to (main menu or pause menu)
 let pauseOptionsReturnState = 'mainMenu';
 
+// --- Game over stats snapshot ---
+const gameOverStats = { level: 1, currency: 0 };
+
 // --- Level & currency ---
 let currentLevel = 1;
 let playerCurrency = 0;
