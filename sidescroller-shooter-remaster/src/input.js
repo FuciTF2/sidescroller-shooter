@@ -42,7 +42,10 @@ window.addEventListener('keydown', (e) => {
         }
         if (e.code === 'Enter') {
             if (devMode) console.log(`Enter pressed — enemiesCleared:${enemiesCleared} atStore:${isPlayerAtStorePosition()} selected:${selectedEstablishment} used:${establishmentUsed}`);
-            if (enemiesCleared && isPlayerAtStorePosition()) {
+            // In devMode, can enter any establishment anywhere at any time
+            if (devMode && isPlayerAtStorePosition()) {
+                enterEstablishment();
+            } else if (enemiesCleared && isPlayerAtStorePosition()) {
                 if (selectedEstablishment && !establishmentUsed) {
                     enterEstablishment();
                 } else {

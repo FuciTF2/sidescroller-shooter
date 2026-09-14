@@ -173,6 +173,7 @@ function gameLoop(timestamp) {
         drawLocationIndicator();
 
         if (enemiesCleared) drawMarkPosition();
+        drawDevModeOverlay();
 
     } else if (currentGameState === gameState.PAUSED) {
         drawBackground();
@@ -188,38 +189,18 @@ function gameLoop(timestamp) {
 
     } else if (currentGameState === gameState.STORE_SCREEN) {
         drawStoreScreen();
-        ctx.drawImage(images.hud, 0, 120);
-        drawCurrency();
-        drawPlayerHealth();
-        drawAmmoType();
 
     } else if (currentGameState === gameState.RESTAURANT_SCREEN) {
         drawRestaurantScreen();
-        ctx.drawImage(images.hud, 0, 120);
-        drawCurrency();
-        drawPlayerHealth();
-        drawAmmoType();
 
     } else if (currentGameState === gameState.ROBBERY_SCREEN) {
         drawRobberyScreen();
-        ctx.drawImage(images.hud, 0, 120);
-        drawCurrency();
-        drawPlayerHealth();
-        drawAmmoType();
 
     } else if (currentGameState === gameState.ROBBERY_SUCCESS) {
         drawRobberySuccessScreen();
-        ctx.drawImage(images.hud, 0, 120);
-        drawCurrency();
-        drawPlayerHealth();
-        drawAmmoType();
 
     } else if (currentGameState === gameState.ROBBERY_FAILURE) {
         drawRobberyFailureScreen();
-        ctx.drawImage(images.hud, 0, 120);
-        drawCurrency();
-        drawPlayerHealth();
-        drawAmmoType();
 
     } else if (currentGameState === gameState.GAME_OVER) {
         // Frozen game world as backdrop

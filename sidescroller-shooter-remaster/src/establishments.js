@@ -14,8 +14,14 @@ function selectRandomEstablishment() {
 }
 
 function enterEstablishment() {
-    // Use the establishment pre-rolled by checkLevelProgression — no reroll on re-entry
-    if (!selectedEstablishment || establishmentUsed) return;
+    // In devMode the player can enter any establishment freely
+    if (devMode) {
+        // If nothing is selected, default to store so there's always something to open
+        if (!selectedEstablishment) selectedEstablishment = ESTABLISHMENTS.STORE;
+        establishmentUsed = false;
+    } else {
+        if (!selectedEstablishment || establishmentUsed) return;
+    }
     if (devMode) console.log(`Entering establishment: ${selectedEstablishment}`);
 
     if (selectedEstablishment === ESTABLISHMENTS.STORE) {

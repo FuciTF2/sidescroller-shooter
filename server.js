@@ -12,11 +12,11 @@ app.use((req, res, next) => {
 });
 
 // Serve static files (HTML, CSS, JS)
-app.use(express.static(__dirname + '/src'));
+app.use(express.static(__dirname + '/sidescroller-shooter-remaster/src'));
 
 // Root route
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/web/web.html');
+  res.sendFile(__dirname + '/sidescroller-shooter-remaster/src/index.html');
 });
 
 // Start the server
